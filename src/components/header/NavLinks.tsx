@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ChevronRight, Terminal } from 'lucide-react';
 import { Section } from '../../types';
 
@@ -17,14 +17,19 @@ const navLinks = [
   Section.Contact,
 ];
 
-// Persisted outside the component so state survives menu close/reopen
-// and stays in sync between desktop and mobile instances.
-let persistedActiveSection: string = Section.Hero;
-
 const NavLinks: React.FC<NavLinksProps> = ({ mobile = false, onNavigate }) => {
-  const [activeSection, setActiveSection] = useState<string>(
-    persistedActiveSection
+  const [activeSection, setActiveSection] = useState<string>(() =>
+    typeof window !== 'undefined'
+      ? (sessionStorage.getItem('nav-active') ?? Section.Hero)
+      : Section.Hero
   );
+
+  useEffect(() => {
+    const handler = (e: Event) =>
+      setActiveSection((e as CustomEvent<string>).detail);
+    window.addEventListener('nav-section-change', handler);
+    return () => window.removeEventListener('nav-section-change', handler);
+  }, []);
 
   const scrollTo = (id: string) => {
     const el = document.getElementById(id);
@@ -34,8 +39,11 @@ const NavLinks: React.FC<NavLinksProps> = ({ mobile = false, onNavigate }) => {
         block: 'start',
         inline: 'nearest',
       });
-    persistedActiveSection = id;
+    sessionStorage.setItem('nav-active', id);
     setActiveSection(id);
+    window.dispatchEvent(
+      new CustomEvent<string>('nav-section-change', { detail: id })
+    );
     onNavigate?.();
   };
 
