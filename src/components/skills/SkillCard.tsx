@@ -17,7 +17,7 @@ const SkillCard: React.FC<SkillCardProps> = ({ skill, index }) => (
     initial={{ opacity: 0, y: 15 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ duration: 0.5, delay: index * 0.05 }}
-    className="p-8 md:p-10 bg-zinc-950/40 border border-white/5 hover:bg-zinc-900/60 transition-all duration-500 group rounded-[2rem] flex flex-col items-center text-center relative overflow-hidden h-full shadow-2xl"
+    className="p-8 md:p-10 bg-zinc-950/40 border border-white/5 hover:bg-zinc-900/60 transition-all duration-500 group rounded-4xl flex flex-col items-center text-center relative overflow-hidden h-full shadow-2xl"
   >
     <div className={`absolute -top-12 -right-12 w-24 h-24 blur-3xl opacity-0 group-hover:opacity-20 transition-opacity duration-700 ${
       skill.level === 'Beginner' ? 'bg-red-500' : skill.level === 'Intermediate' ? 'bg-orange-500' : 'bg-green-500'

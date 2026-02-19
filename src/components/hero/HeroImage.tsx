@@ -20,8 +20,8 @@ const HeroImage: React.FC = () => {
             blurDataURL={BLUR_DATA_URL}
             className="object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-80 pointer-events-none" />
-          <div className="absolute inset-x-0 top-1/4 h-1/3 bg-gradient-to-b from-transparent via-sky-500/15 to-transparent -skew-y-12 pointer-events-none hidden lg:block" />
+          <div className="absolute inset-0 bg-linear-to-t from-black/90 via-transparent to-transparent opacity-80 pointer-events-none" />
+          <div className="absolute inset-x-0 top-1/4 h-1/3 bg-lineaer-to-b from-transparent via-sky-500/15 to-transparent -skew-y-12 pointer-events-none hidden lg:block" />
         </div>
       </div>
     </div>

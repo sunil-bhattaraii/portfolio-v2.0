@@ -41,6 +41,7 @@ export interface Project {
 
 export enum Section {
   Hero = 'home',
+  About = 'about',
   Skills = 'skills',
   Experience = 'experience',
   Qualifications = 'qualifications',
