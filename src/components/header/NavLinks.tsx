@@ -80,14 +80,14 @@ const NavLinks: React.FC<NavLinksProps> = ({ mobile = false, onNavigate }) => {
     <>
       {/* Logo */}
       <div
-        className="flex items-center gap-3 cursor-pointer group"
+        className="flex items-center gap-3 cursor-pointer group hover:scale-105 transition-all"
         onClick={() => scrollTo(Section.Hero)}
       >
         <div className="w-fit p-1 aspect-square rounded-lg flex items-center justify-center group-hover:border-sky-500/50">
-          <Terminal className="text-sky-500 h-3.75 lg:h-4.5 transition-transform group-hover:scale-110" />
+          <Terminal className="text-sky-500 h-3.75 lg:h-4.5 transition-transform" />
         </div>
-        <span className="text-xl font-black tracking-tight transition-colors text-white group-hover:text-sky-400">
-          linus.dev
+        <span className="text-xl font-black tracking-tight transition-colors text-white">
+          linus<span className='text-sky-400'>.dev</span>
         </span>
       </div>
 
