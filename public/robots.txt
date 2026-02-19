@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://sunil-bhattarai.vercel.app/sitemap.xml
+Sitemap: https://www.sunil-bhattarai.com.np/sitemap.xml
