@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import { motion } from 'framer-motion';
 import { MapPin, Coffee, Sparkles } from 'lucide-react';
 
 const facts = [
@@ -16,13 +15,7 @@ const facts = [
 
 const AboutIntro: React.FC = () => {
   return (
-    <motion.div
-      initial={{ opacity: 0, x: -28 }}
-      whileInView={{ opacity: 1, x: 0 }}
-      transition={{ duration: 0.55, ease: 'easeOut' }}
-      viewport={{ once: true }}
-      className="flex flex-col gap-8"
-    >
+    <div className="flex flex-col gap-8">
       {/* Bio */}
       <div className="p-2 lg:p-8 bg-zinc-900/30 border border-white/5 rounded-2xl space-y-4 relative overflow-hidden group hover:border-sky-500/20 transition-all duration-500">
         <div className="absolute -top-10 -left-10 w-32 h-32 bg-sky-500/5 blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
@@ -61,7 +54,7 @@ const AboutIntro: React.FC = () => {
           </div>
         ))}
       </div>
-    </motion.div>
+    </div>
   );
 };
 

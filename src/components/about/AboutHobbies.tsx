@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import { motion } from 'framer-motion';
 import {
   Music,
   Crown as Chess,
@@ -68,12 +67,8 @@ const AboutHobbies: React.FC = () => {
 
       <div className="flex flex-wrap gap-3">
         {hobbies.map((hobby, i) => (
-          <motion.div
+          <div
             key={i}
-            initial={{ opacity: 0, x: 28 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: i * 0.07, ease: 'easeOut' }}
-            viewport={{ once: true }}
             className={`relative group p-4 bg-zinc-950/40 border border-white/5 ${hobby.border} rounded-2xl overflow-hidden transition-all duration-400 hover:bg-zinc-900/50`}
           >
             <div
@@ -89,7 +84,7 @@ const AboutHobbies: React.FC = () => {
                 {hobby.title}
               </h4>
             </div>
-          </motion.div>
+          </div>
         ))}
       </div>
     </div>

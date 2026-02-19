@@ -1,8 +1,6 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
-import { motion } from 'framer-motion';
-
 const ANGLE = 0 * (Math.PI / 180);
 const DX_BASE = Math.sin(ANGLE);
 const DY_BASE = Math.cos(ANGLE);
@@ -404,11 +402,7 @@ const InteractiveBackground: React.FC = () => {
 
   return (
     <div className="absolute inset-0 z-0 bg-[#111111] overflow-hidden pointer-events-none">
-      <motion.div
-        animate={{ scale: [1, 1.05, 1], opacity: [0.35, 0.45, 0.35] }}
-        transition={{ duration: 40, repeat: Infinity, ease: 'linear' }}
-        className="absolute inset-[-10%] pointer-events-none"
-      />
+      <div className="absolute inset-[-10%] pointer-events-none" />
       {isLargeScreen && (
         <canvas
           ref={canvasRef}
