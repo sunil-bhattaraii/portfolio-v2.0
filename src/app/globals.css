@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 :root {
   --bg-base: #050508;
@@ -11,11 +11,13 @@
   box-sizing: border-box;
 }
 
-html, body {
+html,
+body {
   height: 100%;
   background-color: var(--bg-base);
   margin: 0;
   padding: 0;
+  scroll-behavior: smooth;
 }
 
 body {
@@ -49,12 +51,24 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-.code-comment { color: #71717a; }
-.code-keyword { color: #f472b6; }
-.code-func { color: #38bdf8; }
-.code-string { color: #4ade80; }
-.code-prop { color: #fbbf24; }
-.code-const { color: #c084fc; }
+.code-comment {
+  color: #71717a;
+}
+.code-keyword {
+  color: #f472b6;
+}
+.code-func {
+  color: #38bdf8;
+}
+.code-string {
+  color: #4ade80;
+}
+.code-prop {
+  color: #fbbf24;
+}
+.code-const {
+  color: #c084fc;
+}
 
 .custom-scrollbar::-webkit-scrollbar {
   width: 4px;

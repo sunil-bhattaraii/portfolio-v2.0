@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Link from 'next/link';
 import { Mail, Menu, X, Terminal, FileDown, ChevronRight } from 'lucide-react';
 import { Section } from '../types';
 
@@ -8,13 +9,9 @@ const Header: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState<string>(Section.Hero);
 
-  const scrollTo = (id: string) => {
-    const element = document.getElementById(id);
-    if (element) {
-      setActiveSection(id);
-      element.scrollIntoView({ behavior: 'smooth' });
-      setMobileMenuOpen(false);
-    }
+  const handleNav = (id: string) => {
+    setActiveSection(id);
+    setMobileMenuOpen(false);
   };
 
   const navLinks = [
@@ -27,30 +24,29 @@ const Header: React.FC = () => {
 
   return (
     <>
-      <header className="fixed top-0 left-0 w-full z-50 bg-zinc-950/10 backdrop-blur-md border-b border-white/0 py-4">
+      <header className="fixed top-0 left-0 w-full z-50 bg-zinc-950/10 backdrop-blur-md border-b border-white/0 py-1 md:py-2 lg:py-3 xl:py-4">
         <div className="max-w-7xl mx-auto px-6 lg:px-12 flex items-center justify-between">
-          <div
+          <Link
+            href={`#${Section.Hero}`}
             className="flex items-center gap-3 cursor-pointer group"
-            onClick={() => scrollTo(Section.Hero)}
+            onClick={() => handleNav(Section.Hero)}
           >
-            <div className="w-9 h-9 rounded-lg flex items-center justify-center border transition-all shadow-[0_0_15px_rgba(14,165,233,0.1)] group-hover:shadow-[0_0_20px_rgba(14,165,233,0.2)] bg-sky-500/10 border-sky-500/20 group-hover:border-sky-500/50">
-              <Terminal
-                size={18}
-                className="text-sky-500 transition-transform group-hover:scale-110"
-              />
+            <div className="w-fit p-1 aspect-square rounded-lg flex items-center justify-center group-hover:border-sky-500/50">
+              <Terminal className="text-sky-500 h-3.75 lg:h-[18px] transition-transform group-hover:scale-110" />
             </div>
             <span className="text-xl font-black tracking-tight transition-colors text-white group-hover:text-sky-400">
               linus.dev
             </span>
-          </div>
+          </Link>
 
           <nav className="hidden lg:flex items-center gap-10">
             {navLinks.map((s) => {
               const isActive = activeSection === s;
               return (
-                <button
+                <Link
                   key={s}
-                  onClick={() => scrollTo(s)}
+                  href={`#${s}`}
+                  onClick={() => handleNav(s)}
                   className={`relative text-[11px] font-bold transition-all uppercase tracking-[0.25em] group ${
                     isActive ? 'text-white' : 'text-zinc-500 hover:text-white'
                   }`}
@@ -67,7 +63,7 @@ const Header: React.FC = () => {
                   {isActive && (
                     <span className="absolute -top-1 -right-2 w-1 h-1 bg-sky-500 rounded-full animate-pulse shadow-[0_0_5px_#0ea5e9]"></span>
                   )}
-                </button>
+                </Link>
               );
             })}
           </nav>
@@ -98,7 +94,6 @@ const Header: React.FC = () => {
         </div>
       </header>
 
-
       {mobileMenuOpen && (
         <div className="">
           <div
@@ -111,9 +106,10 @@ const Header: React.FC = () => {
               {[Section.Hero, ...navLinks].map((s) => {
                 const isActive = activeSection === s;
                 return (
-                  <button
+                  <Link
                     key={s}
-                    onClick={() => scrollTo(s)}
+                    href={`#${s}`}
+                    onClick={() => handleNav(s)}
                     className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-bold capitalize transition-all text-left ${
                       isActive
                         ? 'bg-sky-500/10 text-sky-400'
@@ -125,7 +121,7 @@ const Header: React.FC = () => {
                       className={`flex-shrink-0 transition-colors ${isActive ? 'text-sky-500' : 'text-zinc-700'}`}
                     />
                     {s}
-                  </button>
+                  </Link>
                 );
               })}
             </nav>
