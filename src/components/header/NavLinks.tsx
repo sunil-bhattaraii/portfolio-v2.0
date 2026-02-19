@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useSyncExternalStore } from 'react';
 import { ChevronRight, Terminal } from 'lucide-react';
 import { Section } from '../../types';
 
@@ -17,33 +17,36 @@ const navLinks = [
   Section.Contact,
 ];
 
+const EVENT = 'nav-section-change';
+
+function subscribe(cb: () => void) {
+  window.addEventListener(EVENT, cb);
+  return () => window.removeEventListener(EVENT, cb);
+}
+function getSnapshot() {
+  return sessionStorage.getItem('nav-active') ?? Section.Hero;
+}
+function getServerSnapshot() {
+  return Section.Hero;
+}
+
 const NavLinks: React.FC<NavLinksProps> = ({ mobile = false, onNavigate }) => {
-  const [activeSection, setActiveSection] = useState<string>(() =>
-    typeof window !== 'undefined'
-      ? (sessionStorage.getItem('nav-active') ?? Section.Hero)
-      : Section.Hero
+  const activeSection = useSyncExternalStore(
+    subscribe,
+    getSnapshot,
+    getServerSnapshot
   );
 
-  useEffect(() => {
-    const handler = (e: Event) =>
-      setActiveSection((e as CustomEvent<string>).detail);
-    window.addEventListener('nav-section-change', handler);
-    return () => window.removeEventListener('nav-section-change', handler);
-  }, []);
-
   const scrollTo = (id: string) => {
-    const el = document.getElementById(id);
-    if (el)
-      el.scrollIntoView({
+    document
+      .getElementById(id)
+      ?.scrollIntoView({
         behavior: 'smooth',
         block: 'start',
         inline: 'nearest',
       });
     sessionStorage.setItem('nav-active', id);
-    setActiveSection(id);
-    window.dispatchEvent(
-      new CustomEvent<string>('nav-section-change', { detail: id })
-    );
+    window.dispatchEvent(new Event(EVENT));
     onNavigate?.();
   };
 
@@ -87,7 +90,7 @@ const NavLinks: React.FC<NavLinksProps> = ({ mobile = false, onNavigate }) => {
           <Terminal className="text-sky-500 h-3.75 lg:h-4.5 transition-transform" />
         </div>
         <span className="text-xl font-black tracking-tight transition-colors text-white">
-          linus<span className='text-sky-400'>.dev</span>
+          linus<span className="text-sky-400">.dev</span>
         </span>
       </div>
 

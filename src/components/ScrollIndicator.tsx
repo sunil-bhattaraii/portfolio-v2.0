@@ -11,9 +11,9 @@ interface ScrollIndicatorProps {
   showOnMobile?: boolean;
 }
 
-const ScrollIndicator: React.FC<ScrollIndicatorProps> = ({ 
-  targetId, 
-  direction = 'down', 
+const ScrollIndicator: React.FC<ScrollIndicatorProps> = ({
+  targetId,
+  direction = 'down',
   isVisible = true,
   showOnMobile = false
 }) => {
@@ -30,7 +30,7 @@ const ScrollIndicator: React.FC<ScrollIndicatorProps> = ({
   return (
     <AnimatePresence>
       {isVisible && (
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -39,15 +39,15 @@ const ScrollIndicator: React.FC<ScrollIndicatorProps> = ({
         >
           <motion.button
             onClick={scrollTo}
-            animate={{ 
+            animate={{
               y: direction === 'down' ? [0, 8, 0] : [0, -8, 0],
             }}
-            transition={{ 
-              duration: 2.5, 
-              repeat: Infinity, 
-              ease: "easeInOut" 
+            transition={{
+              duration: 2.5,
+              repeat: Infinity,
+              ease: "easeInOut"
             }}
-            whileHover={{ 
+            whileHover={{
               scale: 1.1,
               backgroundColor: "rgba(14, 165, 233, 0.15)",
               borderColor: "rgba(14, 165, 233, 0.6)"
@@ -56,9 +56,9 @@ const ScrollIndicator: React.FC<ScrollIndicatorProps> = ({
             className="w-14 h-14 rounded-full border border-white/10 bg-white/5 backdrop-blur-md flex items-center justify-center text-sky-500 transition-colors shadow-[0_0_20px_rgba(0,0,0,0.5)] group"
             aria-label={`Scroll to ${targetId}`}
           >
-            <Icon 
-              size={28} 
-              className={`group-hover:text-white transition-colors ${direction === 'down' ? 'translate-y-[2px]' : 'translate-y-[-2px]'}`} 
+            <Icon
+              size={28}
+              className={`group-hover:text-white transition-colors ${direction === 'down' ? 'translate-y-0.5' : '-translate-y-0.5'}`}
             />
           </motion.button>
         </motion.div>
