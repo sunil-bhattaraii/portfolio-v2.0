@@ -89,7 +89,7 @@ const NavLinks: React.FC<NavLinksProps> = ({ mobile = false, onNavigate }) => {
         <div className="w-fit p-1 aspect-square rounded-lg flex items-center justify-center group-hover:border-sky-500/50">
           <Terminal className="text-sky-500 h-3.75 lg:h-4.5 transition-transform" />
         </div>
-        <span className="text-xl font-black tracking-tight transition-colors text-white">
+        <span className="text-xl font-black tracking-tight  text-white">
           linus<span className="text-sky-400">.dev</span>
         </span>
       </div>
