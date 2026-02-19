@@ -132,7 +132,7 @@ class Star {
     }
 
     const isMovingFast = Math.abs(this.vx) > 4 || Math.abs(this.vy) > 4;
-    if (this.hasTrail ) {
+    if (this.hasTrail) {
       this.trail.push({ x: this.x + this.shakeX, y: this.y + this.shakeY });
       // Cap trail to max length
       if (this.trail.length > TRAIL_MAX_LENGTH) this.trail.shift();
@@ -230,7 +230,11 @@ const InteractiveBackground: React.FC = () => {
   const [isLargeScreen, setIsLargeScreen] = useState(false);
 
   useEffect(() => {
-    setIsLargeScreen(true);
+    const mq = window.matchMedia('(min-width: 1024px)');
+    setIsLargeScreen(mq.matches);
+    const handler = (e: MediaQueryListEvent) => setIsLargeScreen(e.matches);
+    mq.addEventListener('change', handler);
+    return () => mq.removeEventListener('change', handler);
   }, []);
 
   useEffect(() => {
@@ -405,7 +409,7 @@ const InteractiveBackground: React.FC = () => {
         transition={{ duration: 40, repeat: Infinity, ease: 'linear' }}
         className="absolute inset-[-10%] pointer-events-none"
       />
-      {false && isLargeScreen && (
+      {isLargeScreen && (
         <canvas
           ref={canvasRef}
           className="absolute inset-0 pointer-events-none opacity-75"
