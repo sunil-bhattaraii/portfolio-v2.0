@@ -18,7 +18,6 @@ import {
 import { Skill, Qualification, Project, Experience } from './types';
 
 export const COLORS = {
-  bgMain: '#09090b',
   bgCard: 'rgba(24, 24, 27, 0.8)',
   surfaceHover: 'rgba(39, 39, 42, 0.8)',
   textPrimary: '#f4f4f5',

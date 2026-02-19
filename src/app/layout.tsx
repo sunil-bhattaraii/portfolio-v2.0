@@ -15,7 +15,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <div className="relative min-h-screen bg-[#050508] text-[#f4f4f5]">
+        <div className="relative min-h-screen bg-[#ffffff] text-[#f4f4f5]">
           {/* Background layer */}
           <div className="fixed inset-0 z-0">
             <InteractiveBackground />

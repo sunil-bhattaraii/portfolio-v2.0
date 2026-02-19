@@ -3,6 +3,13 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 
+const ANGLE = 0 * (Math.PI / 180);
+const DX_BASE = Math.sin(ANGLE);
+const DY_BASE = Math.cos(ANGLE);
+const RIPPLE_THICKNESS = 80;
+const bgColor = '#111111';
+const TRAIL_MAX_LENGTH = 10;
+
 interface Ripple {
   x: number;
   y: number;
@@ -33,6 +40,7 @@ class Star {
   shakeIntensity: number = 0;
   shakeX: number = 0;
   shakeY: number = 0;
+  hasTrail: boolean = false;
 
   constructor(w: number, h: number) {
     this.x = 0;
@@ -58,8 +66,13 @@ class Star {
         this.y = Math.random() * h;
       }
     }
-    this.size = Math.random() * 1.4 + 0.4;
-    this.speed = Math.random() * 1.5 + 0.5;
+    this.size = Math.random() * 2 + 0.4;
+    this.hasTrail = Math.random() < 0.025;
+    // Shooting stars move significantly faster
+    const baseSpeed = Math.random() * 1.5 + 0.5;
+    this.speed = this.hasTrail
+      ? baseSpeed * (Math.random() * 2 + 3)
+      : baseSpeed;
     this.baseOpacity = Math.random() * 0.2 + 0.1;
     this.opacity = this.baseOpacity;
     this.glow = Math.random() > 0.7 ? '#0ea5e9' : '#ffffff';
@@ -80,7 +93,7 @@ class Star {
     const dx = this.x - mx;
     const dy = this.y - my;
     const dist = Math.sqrt(dx * dx + dy * dy) || 1;
-    const f = burstForce * (Math.random() * 0.5 + 0.75);
+    const f = burstForce * Math.random();
     this.vx += (dx / dist) * f;
     this.vy += (dy / dist) * f;
     this.bursting = true;
@@ -119,10 +132,12 @@ class Star {
     }
 
     const isMovingFast = Math.abs(this.vx) > 4 || Math.abs(this.vy) > 4;
-    if (this.bursting || isMovingFast) {
+    if (this.hasTrail ) {
       this.trail.push({ x: this.x + this.shakeX, y: this.y + this.shakeY });
-      if (this.trail.length > 5) this.trail.shift();
+      // Cap trail to max length
+      if (this.trail.length > TRAIL_MAX_LENGTH) this.trail.shift();
     } else if (this.trail.length > 0) {
+      // Drain trail when not actively trailing
       this.trail.shift();
     }
 
@@ -130,23 +145,14 @@ class Star {
     const dym = mouse.y - this.y;
     const distm = Math.sqrt(dxm * dxm + dym * dym);
 
-    // Direction base (angle 60deg)
-    const ANGLE = 60 * (Math.PI / 180);
-    const DX_BASE = Math.sin(ANGLE);
-    const DY_BASE = Math.cos(ANGLE);
-    const moveX = DX_BASE * this.speed;
-    const moveY = DY_BASE * this.speed;
-
     if (!this.bursting) {
       if (distm < attractionRadius) {
         const force = (attractionRadius - distm) / attractionRadius;
         const norm = distm || 1;
         this.vx += (dxm / norm) * force * attractionStrength;
         this.vy += (dym / norm) * force * attractionStrength;
-        this.opacity = Math.min(0.9, this.opacity + 0.05);
-      } else {
-        this.opacity = Math.max(this.baseOpacity, this.opacity - 0.015);
       }
+      this.opacity = Math.min(0.9, this.opacity + 0.05);
     } else {
       this.opacity = Math.max(this.baseOpacity, this.opacity - 0.02);
       if (this.chainTimer > 0) {
@@ -163,8 +169,8 @@ class Star {
       }
     }
 
-    this.x += moveX + this.vx;
-    this.y += moveY + this.vy;
+    this.x += DX_BASE * this.speed + this.vx;
+    this.y += DY_BASE * this.speed + this.vy;
     const friction = this.bursting || isMovingFast ? 0.94 : 0.96;
     this.vx *= friction;
     this.vy *= friction;
@@ -182,19 +188,25 @@ class Star {
   draw(ctx: CanvasRenderingContext2D) {
     const renderX = this.x + this.shakeX;
     const renderY = this.y + this.shakeY;
+    const isBlue = this.glow !== '#ffffff';
 
     if (this.trail.length > 1) {
-      ctx.beginPath();
-      ctx.moveTo(this.trail[0].x, this.trail[0].y);
+      ctx.lineCap = 'round';
       for (let i = 1; i < this.trail.length; i++) {
-        ctx.lineTo(this.trail[i].x, this.trail[i].y);
+        const prev = this.trail[i - 1];
+        const curr = this.trail[i];
+        const taper = i / this.trail.length;
+
+        ctx.beginPath();
+        ctx.moveTo(prev.x, prev.y);
+        ctx.lineTo(curr.x, curr.y);
+        ctx.lineWidth = this.size * taper;
+        const alpha = this.opacity * taper;
+        ctx.strokeStyle = isBlue
+          ? `rgba(14, 165, 233, ${alpha})`
+          : `rgba(255, 255, 255, ${alpha})`;
+        ctx.stroke();
       }
-      ctx.strokeStyle =
-        this.glow === '#ffffff'
-          ? `rgba(255, 255, 255, ${this.opacity * 0.3})`
-          : `rgba(14, 165, 233, ${this.opacity * 0.3})`;
-      ctx.lineWidth = this.size;
-      ctx.stroke();
     }
 
     ctx.beginPath();
@@ -205,10 +217,9 @@ class Star {
       this.shakeIntensity > 0;
     ctx.shadowBlur = isInteracting ? (this.bursting ? 15 : 8) : 0;
     ctx.shadowColor = this.glow;
-    ctx.fillStyle =
-      this.glow === '#ffffff'
-        ? `rgba(255, 255, 255, ${this.opacity})`
-        : `rgba(14, 165, 233, ${this.opacity})`;
+    ctx.fillStyle = isBlue
+      ? `rgba(14, 165, 233, ${this.opacity})`
+      : `rgba(255, 255, 255, ${this.opacity})`;
     ctx.fill();
     ctx.shadowBlur = 0;
   }
@@ -216,15 +227,10 @@ class Star {
 
 const InteractiveBackground: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const bgImage =
-    'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?q=80&w=2111&auto=format&fit=crop';
   const [isLargeScreen, setIsLargeScreen] = useState(false);
 
   useEffect(() => {
-    const checkScreen = () => setIsLargeScreen(window.innerWidth >= 1024);
-    checkScreen();
-    window.addEventListener('resize', checkScreen);
-    return () => window.removeEventListener('resize', checkScreen);
+    setIsLargeScreen(true);
   }, []);
 
   useEffect(() => {
@@ -241,8 +247,8 @@ const InteractiveBackground: React.FC = () => {
     const mouse: MousePos = { x: -2000, y: -2000 };
 
     const STAR_COUNT = 200;
-    const ATTRACTION_RADIUS = 300;
-    const ATTRACTION_STRENGTH = 0.5;
+    const ATTRACTION_RADIUS = 250;
+    const ATTRACTION_STRENGTH = 0.25;
     const GATHER_THRESHOLD = 35;
     const GATHER_RADIUS = 38;
     const BASE_BURST_FORCE = 28;
@@ -263,9 +269,7 @@ const InteractiveBackground: React.FC = () => {
         const dx = star.x - x;
         const dy = star.y - y;
         const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist < 180) {
-          star.explode(x, y, BASE_BURST_FORCE * 0.5, true);
-        }
+        if (dist < 180) star.explode(x, y, BASE_BURST_FORCE * 0.5, true);
       });
       ctx.fillStyle = 'rgba(255, 255, 255, 0.08)';
       ctx.beginPath();
@@ -274,33 +278,40 @@ const InteractiveBackground: React.FC = () => {
     };
 
     const animate = () => {
-      ctx.fillStyle = 'rgba(5, 5, 8, 0.18)';
+      ctx.fillStyle = bgColor;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
+
       ripples = ripples.filter((r) => r.active);
       ripples.forEach((ripple) => {
         ripple.radius += ripple.speed;
-        if (ripple.radius > ripple.maxRadius) ripple.active = false;
-        const rippleThickness = 80;
+        if (ripple.radius > ripple.maxRadius) {
+          ripple.active = false;
+          return;
+        }
+        const lifeRatio = 1 - ripple.radius / ripple.maxRadius;
+
         stars.forEach((star) => {
           const dx = star.x - ripple.x;
           const dy = star.y - ripple.y;
           const dist = Math.sqrt(dx * dx + dy * dy) || 1;
-          if (dist > ripple.radius - rippleThickness && dist < ripple.radius) {
-            const lifeRatio = 1 - ripple.radius / ripple.maxRadius;
-            const intensity = lifeRatio * 15;
-            star.applyShake(intensity);
-            const pushFactor = lifeRatio * 4.5;
-            star.push((dx / dist) * pushFactor, (dy / dist) * pushFactor);
+          if (dist > ripple.radius - RIPPLE_THICKNESS && dist < ripple.radius) {
+            star.applyShake(lifeRatio * 15);
+            star.push(
+              (dx / dist) * lifeRatio * 4.5,
+              (dy / dist) * lifeRatio * 4.5
+            );
           }
         });
-        const opacity = (1 - ripple.radius / ripple.maxRadius) * 0.15;
+
         ctx.beginPath();
         ctx.arc(ripple.x, ripple.y, ripple.radius, 0, Math.PI * 2);
-        ctx.strokeStyle = `rgba(14, 165, 233, ${opacity})`;
+        ctx.strokeStyle = `rgba(14, 165, 233, ${(1 - ripple.radius / ripple.maxRadius) * 0.15})`;
         ctx.lineWidth = 2;
         ctx.stroke();
       });
+
       let currentGathered = 0;
+      const gatherR2 = GATHER_RADIUS * GATHER_RADIUS;
       stars.forEach((star) => {
         star.update(
           canvas.width,
@@ -312,17 +323,19 @@ const InteractiveBackground: React.FC = () => {
         );
         const dx = mouse.x - star.x;
         const dy = mouse.y - star.y;
-        if (Math.sqrt(dx * dx + dy * dy) < GATHER_RADIUS) currentGathered++;
+        if (dx * dx + dy * dy < gatherR2) currentGathered++;
       });
+
       if (currentGathered >= GATHER_THRESHOLD && globalCooldown <= 0) {
         stars.forEach((star) =>
-          star.explode(mouse.x, mouse.y, BASE_BURST_FORCE)
+          star.explode(mouse.x, mouse.y, BASE_BURST_FORCE * 0.5)
         );
         ctx.fillStyle = 'rgba(14, 165, 233, 0.2)';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         globalCooldown = 100;
       }
       if (globalCooldown > 0) globalCooldown--;
+
       stars.forEach((star) => star.draw(ctx));
       animationFrameId = requestAnimationFrame(animate);
     };
@@ -331,7 +344,12 @@ const InteractiveBackground: React.FC = () => {
       mouse.x = e.clientX;
       mouse.y = e.clientY;
     };
-    const handleWindowClick = (e: MouseEvent) => {
+
+    const handleWindowClick = () => {
+      stars.forEach((star) => star.explode(mouse.x, mouse.y, BASE_BURST_FORCE));
+    };
+
+    const handleWindowDblClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
       const style = window.getComputedStyle(target);
       const isInteractive =
@@ -340,6 +358,7 @@ const InteractiveBackground: React.FC = () => {
         !!target.closest('button') ||
         !!target.closest('a') ||
         style.cursor === 'pointer';
+
       if (!isInteractive) {
         ripples.push({
           x: e.clientX,
@@ -364,6 +383,7 @@ const InteractiveBackground: React.FC = () => {
 
     window.addEventListener('mousemove', handleMouseMove);
     window.addEventListener('mousedown', handleWindowClick);
+    window.addEventListener('dblclick', handleWindowDblClick);
     window.addEventListener('resize', init);
 
     init();
@@ -373,38 +393,24 @@ const InteractiveBackground: React.FC = () => {
       cancelAnimationFrame(animationFrameId);
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mousedown', handleWindowClick);
+      window.removeEventListener('dblclick', handleWindowDblClick);
       window.removeEventListener('resize', init);
     };
   }, [isLargeScreen]);
 
   return (
-    <div className="absolute inset-0 z-0 bg-[#050508] overflow-hidden pointer-events-none">
+    <div className="absolute inset-0 z-0 bg-[#111111] overflow-hidden pointer-events-none">
       <motion.div
         animate={{ scale: [1, 1.05, 1], opacity: [0.35, 0.45, 0.35] }}
         transition={{ duration: 40, repeat: Infinity, ease: 'linear' }}
-        style={{
-          backgroundImage: `url(${bgImage})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          filter: 'blur(100px) brightness(0.25) saturate(1.2)',
-        }}
         className="absolute inset-[-10%] pointer-events-none"
       />
-      {isLargeScreen && (
+      {false && isLargeScreen && (
         <canvas
           ref={canvasRef}
-          className="absolute inset-0 pointer-events-none"
+          className="absolute inset-0 pointer-events-none opacity-75"
         />
       )}
-      <div
-        className="absolute inset-0 opacity-[0.03] pointer-events-none"
-        style={{
-          backgroundImage:
-            'linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px)',
-          backgroundSize: '90px 90px',
-        }}
-      />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_20%,rgba(5,5,8,0.95)_100%)] pointer-events-none" />
     </div>
   );
 };

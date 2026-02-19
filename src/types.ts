@@ -40,7 +40,7 @@ export interface Project {
 }
 
 export enum Section {
-  Hero = 'hero',
+  Hero = 'home',
   Skills = 'skills',
   Experience = 'experience',
   Qualifications = 'qualifications',
