@@ -1,62 +1,51 @@
-"use client";
+'use client';
 
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Minus, Sparkles } from 'lucide-react';
 import { INITIAL_SKILLS } from '../../constants';
+import { SkillCategory } from '../../types';
 import SkillCard from './SkillCard';
 
+const CATEGORIES: { label: string; value: 'All' | SkillCategory }[] = [
+  { label: 'All', value: 'All' },
+  { label: 'Core', value: 'Core' },
+  { label: 'Frontend', value: 'Frontend' },
+  { label: 'Backend', value: 'Backend' },
+  { label: 'DevOps', value: 'DevOps' },
+  { label: 'Design', value: 'Design' },
+];
+
 const SkillsGrid: React.FC = () => {
-  const [isExpanded, setIsExpanded] = useState(false);
-  
-  const highlightedSkills = INITIAL_SKILLS.filter(s => s.highlight);
-  const otherSkills = INITIAL_SKILLS.filter(s => !s.highlight);
+  const [active, setActive] = useState<'All' | SkillCategory>('Core');
+
+  const filtered =
+    active === 'All'
+      ? INITIAL_SKILLS
+      : INITIAL_SKILLS.filter((s) => s.categories.includes(active));
 
   return (
     <>
-      <motion.div layout className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6">
-        {highlightedSkills.map((skill, index) => (
+      {/* Category tabs */}
+      <div className="flex flex-wrap gap-2 mb-10">
+        {CATEGORIES.map(({ label, value }) => (
+          <button
+            key={value}
+            onClick={() => setActive(value)}
+            className={`px-4 py-1.5 rounded-lg text-[11px] font-bold uppercase tracking-widest transition-all duration-300 border ${
+              active === value
+                ? 'bg-sky-500/10 border-sky-500/40 text-sky-400'
+                : 'bg-transparent border-white/5 text-zinc-500 hover:text-zinc-300 hover:border-white/10'
+            }`}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+
+      {/* Grid */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+        {filtered.map((skill, index) => (
           <SkillCard key={skill.id} skill={skill} index={index} />
         ))}
-        
-        <AnimatePresence>
-          {isExpanded && otherSkills.map((skill, index) => (
-            <SkillCard key={skill.id} skill={skill} index={highlightedSkills.length + index} />
-          ))}
-        </AnimatePresence>
-      </motion.div>
-
-      <div className="mt-16 flex flex-col items-center">
-        <motion.button
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-          onClick={() => setIsExpanded(!isExpanded)}
-          className={`group flex items-center gap-3 px-10 py-5 rounded-2xl font-black uppercase tracking-[0.2em] text-[11px] transition-all duration-500 border ${
-            isExpanded 
-            ? 'bg-zinc-900 border-white/10 text-zinc-400 hover:text-white' 
-            : 'bg-sky-500/10 border-sky-500/20 text-sky-500 hover:bg-sky-500 hover:text-white hover:shadow-[0_0_30px_rgba(14,165,233,0.3)]'
-          }`}
-        >
-          {isExpanded ? (
-            <>
-              <Minus size={16} className="transition-transform group-hover:rotate-180 duration-500" />
-              Show Less
-            </>
-          ) : (
-            <>
-              <Sparkles size={16} className="transition-transform group-hover:scale-125 duration-500" />
-              Explore All Skills
-            </>
-          )}
-        </motion.button>
-        
-        <div className="mt-4 flex items-center gap-2">
-          <span className="w-1.5 h-1.5 rounded-full bg-zinc-800"></span>
-          <p className="text-[9px] font-bold text-zinc-600 uppercase tracking-widest">
-            {isExpanded ? 'Full capability map visible' : `${otherSkills.length} more specialized tools`}
-          </p>
-          <span className="w-1.5 h-1.5 rounded-full bg-zinc-800"></span>
-        </div>
       </div>
     </>
   );

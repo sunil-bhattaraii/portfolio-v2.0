@@ -1,5 +1,10 @@
-
 export type SkillLevel = 'Beginner' | 'Intermediate' | 'Experienced';
+export type SkillCategory =
+  | 'Core'
+  | 'Frontend'
+  | 'Backend'
+  | 'DevOps'
+  | 'Design';
 
 export interface Skill {
   id: string;
@@ -7,6 +12,7 @@ export interface Skill {
   level: SkillLevel;
   icon: string; // Lucide icon name or URL
   highlight: boolean;
+  categories: SkillCategory[];
 }
 
 export interface Qualification {
@@ -46,5 +52,5 @@ export enum Section {
   Experience = 'experience',
   Qualifications = 'qualifications',
   Projects = 'projects',
-  Contact = 'contact'
+  Contact = 'contact',
 }
