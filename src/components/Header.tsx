@@ -5,7 +5,7 @@ import MobileMenu from './header/MobileMenu';
 
 const Header: React.FC = () => {
   return (
-    <header className="fixed top-0 left-0 w-full z-50 bg-zinc-950/10 backdrop-blur-md border-b border-white/0 py-1 md:py-2 lg:py-3 xl:py-4">
+    <header className="select-none fixed top-0 left-0 w-full z-50 bg-zinc-950/10 backdrop-blur-md border-b border-white/0 py-1 md:py-2 lg:py-3 xl:py-4">
       <div className="max-w-7xl mx-auto px-6 lg:px-12 flex items-center justify-between">
         {/* Logo + desktop nav links — client */}
         <NavLinks />

@@ -19,6 +19,14 @@ const Hero: React.FC = () => {
         <div className="order-2 lg:order-1 w-full lg:max-w-2xl xl:max-w-3xl">
           <HeroTitle />
           <HeroTerminal />
+
+          <div className="lg:hidden text-zinc-400 text-sm leading-relaxed p-2 mb-4 pt-0">
+            Hello! I am a Computer Science student passionate about creating
+            meaningful digital experiences. I love turning ideas into real
+            projects and enjoy learning new ways to solve problems and improve
+            my skills.
+          </div>
+          
           <SocialLinks />
           <HeroActions />
         </div>

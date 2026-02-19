@@ -10,8 +10,8 @@ import ContactFooter from '../components/contact/ContactFooter';
 const Contact: React.FC = () => {
   return (
     <SectionWrapper id={Section.Contact} className="relative" scrollTargetId={Section.Hero} scrollDirection="up">
-      <div className="flex flex-col flex-1">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-center flex-1">
+      <div className="flex flex-col justify-between flex-1">
+        <div className="grid grow grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-center flex-1">
           <div>
             <ContactHeader />
             <ContactInfo />

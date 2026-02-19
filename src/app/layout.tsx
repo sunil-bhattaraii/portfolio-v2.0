@@ -1,6 +1,9 @@
 import React from 'react';
 import './globals.css';
 import type { Metadata } from 'next';
+import { Inter } from 'next/font/google';
+
+const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 import Header from '../components/Header';
 import InteractiveBackground from '../components/InteractiveBackground';
 import AIAssistant from '../components/AIAssistant';
@@ -63,15 +66,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" className={`${inter.variable} font-sans antialiased`}>
       <body>
-        <div className="relative min-h-screen bg-[#ffffff] text-[#f4f4f5]">
-          {/* Background layer */}
+        <div className="relative min-h-screen text-[#f4f4f5]">
           <div className="fixed inset-0 z-0">
             <InteractiveBackground />
           </div>
 
-          {/* Content layer */}
           <div className="relative z-10 flex flex-col min-h-screen">
             <Header />
             <div className="grow">{children}</div>
