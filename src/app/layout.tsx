@@ -29,14 +29,14 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    url: 'https://sunil-bhattarai.vercel.app',
+    url: 'https://www.sunil-bhattarai.com.np',
     siteName: 'Sunil Bhattarai',
     title: 'Sunil Bhattarai — Personal Portfolio',
     description:
       'Fullstack developer crafting scalable systems and polished interfaces. Based in Kathmandu, Nepal.',
     images: [
       {
-        url: 'https://sunil-bhattarai.vercel.app/heroImage.webp',
+        url: 'https://www.sunil-bhattarai.com.np/heroImage.webp',
         width: 1200,
         height: 630,
         alt: 'Sunil Bhattarai — Fullstack Software Developer',
@@ -48,7 +48,7 @@ export const metadata: Metadata = {
     title: 'Sunil Bhattarai — Personal Portfolio',
     description:
       'Fullstack developer crafting scalable systems and polished interfaces. Based in Kathmandu, Nepal.',
-    images: ['https://sunil-bhattarai.vercel.app/heroImage.webp'],
+    images: ['https://www.sunil-bhattarai.com.np/heroImage.webp'],
   },
   robots: {
     index: true,
@@ -59,8 +59,72 @@ export const metadata: Metadata = {
     icon: '/favicon.png',
   },
   alternates: {
-    canonical: 'https://sunil-bhattarai.vercel.app',
+    canonical: 'https://www.sunil-bhattarai.com.np',
   },
+};
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Person',
+      '@id': 'https://www.sunil-bhattarai.com.np/#person',
+      name: 'Sunil Bhattarai',
+      url: 'https://www.sunil-bhattarai.com.np',
+      image: 'https://www.sunil-bhattarai.com.np/heroImage.webp',
+      jobTitle: 'Fullstack Software Developer',
+      description:
+        'Fullstack software developer based in Kathmandu, Nepal. Specialising in React, Next.js, Node.js, and scalable system design.',
+      address: {
+        '@type': 'PostalAddress',
+        addressLocality: 'Kathmandu',
+        addressCountry: 'NP',
+      },
+      knowsAbout: [
+        'React',
+        'Next.js',
+        'Node.js',
+        'TypeScript',
+        'Go',
+        'PostgreSQL',
+        'Kubernetes',
+        'AWS',
+        'System Design',
+      ],
+      sameAs: [
+        'https://github.com',
+        'https://linkedin.com',
+        'https://leetcode.com',
+      ],
+      hasOccupation: {
+        '@type': 'Occupation',
+        name: 'Fullstack Software Developer',
+        occupationLocation: {
+          '@type': 'City',
+          name: 'Kathmandu',
+        },
+        skills: 'React, Next.js, Node.js, TypeScript, Go, PostgreSQL',
+      },
+    },
+    {
+      '@type': 'WebSite',
+      '@id': 'https://www.sunil-bhattarai.com.np/#website',
+      url: 'https://www.sunil-bhattarai.com.np',
+      name: 'Sunil Bhattarai — Personal Portfolio',
+      description:
+        'Portfolio of Sunil Bhattarai, a fullstack software developer based in Kathmandu, Nepal.',
+      author: { '@id': 'https://www.sunil-bhattarai.com.np/#person' },
+      inLanguage: 'en-US',
+    },
+    {
+      '@type': 'ProfilePage',
+      '@id': 'https://www.sunil-bhattarai.com.np/#profilepage',
+      url: 'https://www.sunil-bhattarai.com.np',
+      name: 'Sunil Bhattarai — Personal Portfolio',
+      about: { '@id': 'https://www.sunil-bhattarai.com.np/#person' },
+      mainEntity: { '@id': 'https://www.sunil-bhattarai.com.np/#person' },
+    },
+  ],
 };
 
 export default function RootLayout({
@@ -70,6 +134,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`${inter.variable} font-sans antialiased`}>
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      </head>
       <body>
         <div className="relative min-h-screen text-[#f4f4f5]">
           <div className="fixed inset-0 z-0">
