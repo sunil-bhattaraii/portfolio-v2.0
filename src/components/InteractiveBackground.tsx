@@ -406,7 +406,7 @@ const InteractiveBackground: React.FC = () => {
       {isLargeScreen && (
         <canvas
           ref={canvasRef}
-          className="absolute inset-0 pointer-events-none opacity-75"
+          className="absolute inset-0 pointer-events-none opacity-25"
         />
       )}
     </div>

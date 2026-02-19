@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://sunil-bhattarai.vercel.app/sitemap.xml

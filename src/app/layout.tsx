@@ -2,11 +2,11 @@ import React from 'react';
 import './globals.css';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
-
-const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 import Header from '../components/Header';
 import InteractiveBackground from '../components/InteractiveBackground';
 import AIAssistant from '../components/AIAssistant';
+
+const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 
 export const metadata: Metadata = {
   title: 'Sunil Bhattarai — Personal Portfolio',
@@ -57,6 +57,9 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: '/favicon.png',
+  },
+  alternates: {
+    canonical: 'https://sunil-bhattarai.vercel.app',
   },
 };
 
