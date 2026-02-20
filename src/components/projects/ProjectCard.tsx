@@ -3,6 +3,7 @@
 import React from 'react';
 import { ArrowUpRight } from 'lucide-react';
 import { Project } from '../../types';
+import Image from 'next/image';
 
 interface ProjectCardProps {
   project: Project;
@@ -15,12 +16,28 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onClick }) => {
       onClick={onClick}
       className="group relative cursor-pointer overflow-hidden bg-zinc-900/50 border border-white/5 transition-all hover:bg-zinc-900"
     >
-      <div className="aspect-[16/10] w-full overflow-hidden grayscale group-hover:grayscale-0 transition-all duration-700 opacity-60 group-hover:opacity-100">
-        <img
-          src={project.imageUrl}
-          alt={project.title}
-          className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-700"
-        />
+      <div className="aspect-16/10 w-full overflow-hidden saturate-[0.4] brightness-90 opacity-75 group-hover:saturate-100 group-hover:brightness-100 group-hover:opacity-100 transition-all duration-700 relative">
+        {project.liveUrl ? (
+          <>
+            <iframe
+              src={project.liveUrl}
+              title={project.title}
+              className="w-full h-full border-0 group-hover:scale-105 transition-transform duration-700 origin-top-left"
+              style={{ pointerEvents: 'none' }}
+              loading="lazy"
+              sandbox="allow-scripts allow-same-origin"
+            />
+            {/* Transparent overlay to capture click events */}
+            <div className="absolute inset-0" />
+          </>
+        ) : (
+          <Image
+            src={project.imageUrl}
+            alt={project.title}
+            fill
+            className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-700"
+          />
+        )}
       </div>
       <div className="p-10 border-t border-white/5">
         <div className="flex justify-between items-start mb-6">

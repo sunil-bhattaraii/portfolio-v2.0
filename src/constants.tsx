@@ -31,23 +31,23 @@ export const INITIAL_SKILLS: Skill[] = [
   // Core Skills
   {
     id: '1',
-    name: 'System Architecture',
+    name: 'MERN Stack Development',
     level: 'Experienced',
     icon: 'Layers',
     highlight: true,
-    categories: ['Core', 'Backend'],
+    categories: ['Core', 'Fullstack'],
   },
   {
     id: '2',
     name: 'React / Next.js',
-    level: 'Experienced',
+    level: 'Intermediate',
     icon: 'Code2',
     highlight: true,
     categories: ['Core', 'Frontend'],
   },
   {
     id: '3',
-    name: 'Node.js Backend',
+    name: 'Node.js / Express Backend',
     level: 'Intermediate',
     icon: 'Terminal',
     highlight: true,
@@ -55,7 +55,7 @@ export const INITIAL_SKILLS: Skill[] = [
   },
   {
     id: '4',
-    name: 'Database Design',
+    name: 'Database Design & SQL',
     level: 'Intermediate',
     icon: 'Database',
     highlight: true,
@@ -63,234 +63,199 @@ export const INITIAL_SKILLS: Skill[] = [
   },
   {
     id: '5',
-    name: 'UI/UX Design',
-    level: 'Beginner',
-    icon: 'Layout',
+    name: 'Systems & OS Fundamentals',
+    level: 'Intermediate',
+    icon: 'Cpu',
     highlight: true,
-    categories: ['Core', 'Design'],
+    categories: ['Core', 'Systems'],
   },
   {
     id: '6',
-    name: 'TypeScript',
-    level: 'Experienced',
-    icon: 'Cpu',
+    name: 'Data Structures & Algorithms',
+    level: 'Intermediate',
+    icon: 'Binary',
     highlight: true,
-    categories: ['Core', 'Frontend'],
+    categories: ['Core'],
   },
 
   // Secondary Skills
   {
     id: '7',
-    name: 'Git & Versioning',
-    level: 'Experienced',
-    icon: 'GitBranch',
+    name: 'C / C++ Programming',
+    level: 'Intermediate',
+    icon: 'Code',
     highlight: false,
-    categories: ['DevOps'],
+    categories: ['Systems'],
   },
   {
     id: '8',
-    name: 'Cloud (AWS/GCP)',
+    name: 'MongoDB (NoSQL)',
     level: 'Intermediate',
-    icon: 'Cloud',
+    icon: 'Database',
     highlight: false,
-    categories: ['DevOps'],
+    categories: ['Backend'],
   },
   {
     id: '9',
-    name: 'Cyber Security',
-    level: 'Beginner',
+    name: 'Authentication (JWT, Sessions)',
+    level: 'Intermediate',
     icon: 'Shield',
     highlight: false,
-    categories: ['DevOps'],
+    categories: ['Backend'],
   },
   {
     id: '10',
-    name: 'Mobile Dev',
-    level: 'Intermediate',
-    icon: 'Smartphone',
+    name: 'Git & Linux (Ubuntu)',
+    level: 'Experienced',
+    icon: 'GitBranch',
     highlight: false,
-    categories: ['Frontend'],
+    categories: ['DevOps', 'Systems'],
   },
   {
     id: '11',
-    name: 'CI/CD Pipelines',
+    name: 'REST API Design',
     level: 'Intermediate',
-    icon: 'Workflow',
-    highlight: false,
-    categories: ['DevOps'],
-  },
-  {
-    id: '12',
-    name: 'GraphQL APIs',
-    level: 'Experienced',
     icon: 'Globe',
     highlight: false,
     categories: ['Backend'],
   },
+  {
+    id: '12',
+    name: 'Mathematics for Computing',
+    level: 'Experienced',
+    icon: 'FunctionSquare',
+    highlight: false,
+    categories: ['Core'],
+  },
 ];
 
-export const INITIAL_EXPERIENCES: Experience[] = [
-  {
-    id: '1',
-    role: 'Senior Software Engineer',
-    company: 'TechFlow Solutions',
-    duration: 'Jan 2023 - Present',
-    description: [
-      'Led the transition from monolithic architecture to a microservices-based system.',
-      'Optimized database queries resulting in a 40% reduction in response latency.',
-      'Mentored a team of 5 junior developers in modern React patterns.',
-    ],
-    skills: ['Next.js', 'Go', 'Kubernetes', 'PostgreSQL'],
-  },
-  {
-    id: '2',
-    role: 'Full Stack Developer',
-    company: 'Nexus Creative Agency',
-    duration: 'June 2021 - Dec 2022',
-    description: [
-      'Developed custom e-commerce solutions for high-traffic luxury brands.',
-      'Implemented robust CI/CD pipelines using GitHub Actions.',
-      'Crafted pixel-perfect UIs with a focus on accessibility and performance.',
-    ],
-    skills: ['React', 'Node.js', 'AWS', 'Tailwind CSS'],
-  },
-  {
-    id: '3',
-    role: 'Junior Developer',
-    company: 'Startup Hub',
-    duration: 'Jan 2020 - May 2021',
-    description: [
-      'Contributed to the development of a real-time messaging platform.',
-      'Integrated third-party APIs for payment processing and analytics.',
-      'Maintained high code quality through rigorous unit testing and peer reviews.',
-    ],
-    skills: ['JavaScript', 'Socket.io', 'MongoDB', 'Express'],
-  },
-];
+export const INITIAL_EXPERIENCES: Experience[] = [];
 
 export const INITIAL_QUALIFICATIONS: Qualification[] = [
   {
     id: '1',
-    title: 'Bachelor of Software Engineering',
-    institute: 'Technical University of Nepal',
-    year: '2022',
-    details: 'Graduated with Honors, Specialization in Distributed Systems.',
+    title:
+      'Bachelor of Science in Computer Science and Information Technology (BSc CSIT)',
+    institute: 'Tribhuvan University (TU)',
+    year: '2025 - Ongoing',
+    details:
+      'Focused on systems, databases, software engineering, and theoretical computer science.',
     type: 'degree',
   },
   {
     id: '2',
-    title: 'Professional System Design Certificate',
-    institute: 'Global Academy of Tech',
-    year: '2023',
-    details: 'Advanced architecture patterns and cloud scalability.',
-    type: 'certification',
-  },
-  {
-    id: '3',
-    title: 'Frontend Development Specialization',
-    institute: 'Code Masters Institute',
-    year: '2021',
-    details: 'Mastery of modern JavaScript frameworks.',
-    type: 'certification',
-  },
-  {
-    id: '4',
-    title: 'AWS Certified Solutions Architect',
-    institute: 'Amazon Web Services',
-    year: '2023',
+    title: '+2 Science',
+    institute: 'Sunsari Crystal Academy',
+    year: '2022 - 2024',
     details:
-      'Design and deployment of scalable, highly available systems on AWS.',
-    type: 'certification',
-  },
-  {
-    id: '5',
-    title: 'Deep Learning Specialization',
-    institute: 'DeepLearning.AI',
-    year: '2022',
-    details: 'Neural networks, computer vision, and NLP fundamentals.',
-    type: 'certification',
+      'Higher secondary education under Nepal Education Board (NEB) with science stream.',
+    type: 'degree',
   },
 ];
 
 export const INITIAL_PROJECTS: Project[] = [
   {
     id: '1',
-    title: 'Enterprise ERP System',
+    title: 'Hamro Menchhayayem',
     description:
-      'A robust enterprise resource planning platform designed for high-scale retail operations.',
-    techStack: ['Next.js', 'PostgreSQL', 'Prisma', 'Tailwind'],
+      'A simple project to showcase my hometown Menchhayayem Rural Municipality to the digital world in collaboration with my friend.',
+    techStack: ['Next.js', 'MongoDB', 'Vercel', 'Tailwind'],
     imageUrl:
-      'https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=1000&auto=format&fit=crop',
+      'https://res.cloudinary.com/dggnne5ja/image/upload/v1771578032/Screenshot_from_2026-02-20_14-43-49_ygbnbp.png',
     status: 'Completed',
-    fullDetails:
-      'This project involved building a comprehensive ERP system that handles inventory, sales, and employee management for a mid-sized retail chain. It features real-time data visualization and automated reporting.',
-    githubUrl: 'https://github.com',
-    liveUrl: 'https://example.com',
-  },
-  {
-    id: '2',
-    title: 'Distributed Analytics Engine',
-    description:
-      'High-performance analytics engine capable of processing millions of events per second.',
-    techStack: ['Node.js', 'Redis', 'Kafka', 'Go'],
-    imageUrl:
-      'https://images.unsplash.com/photo-1551288049-bbda38a5f85d?q=80&w=1000&auto=format&fit=crop',
-    status: 'Ongoing',
-    fullDetails:
-      'Currently developing a low-latency analytics pipeline that aggregates user behavior data for real-time dashboarding. Focus is on horizontal scalability and fault tolerance.',
-    githubUrl: 'https://github.com',
-  },
-  {
-    id: '3',
-    title: 'AI-Powered Code Assistant',
-    description:
-      'IDE plugin that suggests architectural improvements based on best practices.',
-    techStack: ['TypeScript', 'Gemini API', 'VS Code API'],
-    imageUrl:
-      'https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=1000&auto=format&fit=crop',
-    status: 'Completed',
-    fullDetails:
-      'An extension for VS Code that analyzes the active codebase to suggest refactoring patterns and architectural optimizations using large language models.',
-    liveUrl: 'https://example.com',
+    fullDetails: `This is a project focused on promoting the tourism, cultural identity, and literature of Menchhayayem Rural Municipality
+
+The idea behind this project was simple: to digitally preserve local stories, places, and traditions, and make them easier for more people to discover while staying true to our roots.
+
+This is our first proper full-stack project, where we went through the whole journey; From system analysis and planning, to UI design, and finally development. Learned a lot along the way, especially by building things from scratch and solving real problems.
+
+Project details:
+Tech stack: Next.js, React, Tailwind CSS, JavaScript
+Developer team: Kushal Dhakal & Sunil Bhattarai
+Mentors: Saroj Dhakal & ChatGPT
+Reviewer: @Copilot
+
+figma: https://lnkd.in/gBwSCHWG
+github: https://lnkd.in/gnanW_ae
+website: https://lnkd.in/gb48HZdY
+    `,
+    githubUrl: 'https://github.com/Kushal216/hamro-menchhayayem',
+    liveUrl: 'https://hamromenchhayayem.vercel.app/',
   },
   {
     id: '4',
-    title: 'AI-Powered Code Assistant',
+    title: 'pseudo-database',
     description:
-      'IDE plugin that suggests architectural improvements based on best practices.',
-    techStack: ['TypeScript', 'Gemini API', 'VS Code API'],
+      'A simple npm utility package that creates and manages a pseudo database directory for lightweight data persistence and experimentation.',
+    techStack: ['JavaScript', 'Node.js', 'npm'],
     imageUrl:
-      'https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=1000&auto=format&fit=crop',
+      'https://kinsta.com/wp-content/uploads/2022/07/nodejs-fs-image.jpeg',
     status: 'Completed',
-    fullDetails:
-      'An extension for VS Code that analyzes the active codebase to suggest refactoring patterns and architectural optimizations using large language models.',
-    liveUrl: 'https://example.com',
+    fullDetails: `pseudo-database is a utility npm package designed to simulate a lightweight database by creating a "pseudo-database" folder and managing data using file system operations.
+
+This package provides basic infrastructure for storing and retrieving structured data without relying on a full database server. It is ideal for prototyping, simple storage needs, and experiments where a real database is unnecessary.
+
+Key features:
+- Creates a pseudo database directory using file handling
+- Simple API for basic read/write operations
+- Useful for local testing and small personal projects
+
+Tech stack: JavaScript, Node.js
+Package registry: npm
+Purpose: Lightweight persistence and learning tool`,
+    githubUrl: 'https://github.com/sunil-bhattaraii/pseudo-database',
   },
   {
-    id: '5',
-    title: 'AI-Powered Code Assistant',
+    id: '2',
+    title: 'Chess Opening Trainer',
     description:
-      'IDE plugin that suggests architectural improvements based on best practices.',
-    techStack: ['TypeScript', 'Gemini API', 'VS Code API'],
+      'A focused chess learning platform built to train and reinforce opening theory through structured practice and repetition.',
+    techStack: ['vibecoding', 'Next.js', 'React', 'TypeScript', 'Tailwind CSS'],
     imageUrl:
-      'https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=1000&auto=format&fit=crop',
-    status: 'Completed',
-    fullDetails:
-      'An extension for VS Code that analyzes the active codebase to suggest refactoring patterns and architectural optimizations using large language models.',
-    liveUrl: 'https://example.com',
+      'https://res.cloudinary.com/dggnne5ja/image/upload/v1771578032/chess_project_placeholder.png',
+    status: 'Ongoing',
+    fullDetails: `This is a personal chess learning project vibecoded primarily to train and improve understanding of chess openings.
+
+The core goal of the project is to build strong opening foundations through repetition, pattern recognition, and interactive move validation. Instead of passively studying lines, the platform encourages active recall and structured training.
+
+Key focus areas:
+- Opening move trees and variations
+- Move validation and feedback
+- Training mode for repetition-based learning
+- Clean and distraction-free UI for focused practice
+
+This project also serves as a practical system design exercise, where logic handling, state management, and user interaction patterns are carefully structured.
+
+Tech stack: Next.js, React, TypeScript, Tailwind CSS
+Developer: Sunil Bhattarai
+Purpose: Personal learning + public training tool`,
+    githubUrl: 'https://github.com/your-username/chess-opening-trainer',
+    liveUrl: 'https://chess.sunil-bhattarai.com.np/',
   },
   {
-    id: '6',
-    title: 'AI-Powered Code Assistant',
+    id: '3',
+    title: 'My Notes App',
     description:
-      'IDE plugin that suggests architectural improvements based on best practices.',
-    techStack: ['TypeScript', 'Gemini API', 'VS Code API'],
+      'A practice project built to strengthen React and JavaScript fundamentals by creating a simple note-taking application.',
+    techStack: ['React', 'JavaScript', 'CSS', 'Vercel'],
     imageUrl:
-      'https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=1000&auto=format&fit=crop',
+      'https://res.cloudinary.com/dggnne5ja/image/upload/v1771578032/my_notes_app_placeholder.png',
     status: 'Completed',
-    fullDetails:
-      'An extension for VS Code that analyzes the active codebase to suggest refactoring patterns and architectural optimizations using large language models.',
-    liveUrl: 'https://example.com',
+    fullDetails: `This is a practice project focused on improving core React and JavaScript skills through hands-on application development.
+
+The app allows users to create, view, and manage notes in a clean and responsive UI. It helped solidify understanding of React concepts such as component design, state management, event handling, and conditional rendering.
+
+Key features:
+- Add, edit, and delete notes
+- Use of React hooks (useState, useEffect)
+- Responsive layout
+- Local storage persistence
+
+Tech stack: React, JavaScript, CSS
+Developer: Sunil Bhattarai
+Purpose: Hands-on practice to strengthen frontend fundamentals.`,
+    githubUrl: 'https://github.com/sunil-bhattaraii/My-Notes',
+    liveUrl: 'https://my-notes-mocha-iota.vercel.app/',
   },
 ];
 

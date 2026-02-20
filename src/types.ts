@@ -12,7 +12,7 @@ export interface Skill {
   level: SkillLevel;
   icon: string; // Lucide icon name or URL
   highlight: boolean;
-  categories: SkillCategory[];
+  categories: string[];
 }
 
 export interface Qualification {

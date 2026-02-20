@@ -1,8 +1,9 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { X, Github, ExternalLink } from 'lucide-react';
 import { Project } from '../../types';
+import Image from 'next/image';
 
 interface ProjectModalProps {
   project: Project;
@@ -10,6 +11,13 @@ interface ProjectModalProps {
 }
 
 const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) => {
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, []);
+
   return (
     <div
       className="fixed inset-0 z-[1000] flex items-center justify-center p-4 md:p-8 bg-black/95 backdrop-blur-sm"
@@ -28,20 +36,31 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) => {
         </button>
 
         <div className="grid grid-cols-1 md:grid-cols-2">
-          <div className="aspect-square md:aspect-auto h-full">
-            <img
-              src={project.imageUrl}
-              alt={project.title}
-              className="w-full h-full object-cover"
-            />
+          <div className="aspect-square md:aspect-auto h-full relative overflow-hidden">
+            {project.liveUrl ? (
+              <iframe
+                src={project.liveUrl}
+                title={project.title}
+                className="w-full h-full border-0"
+                loading="lazy"
+                sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+              />
+            ) : (
+              <Image
+                src={project.imageUrl}
+                alt={project.title}
+                fill
+                className="w-full h-full object-cover"
+              />
+            )}
           </div>
           <div className="p-10 md:p-16 flex flex-col justify-center">
             <h2 className="text-4xl font-black text-white mb-6 tracking-tighter leading-tight">
               {project.title}
             </h2>
-            <p className="text-zinc-400 text-lg mb-8 leading-relaxed">
+            <pre className="text-zinc-400 text-wrap text-lg mb-8 leading-relaxed max-h-[50vh] overflow-auto">
               {project.fullDetails || project.description}
-            </p>
+            </pre>
             <div className="flex flex-wrap gap-2 mb-10">
               {project.techStack.map((tech) => (
                 <span

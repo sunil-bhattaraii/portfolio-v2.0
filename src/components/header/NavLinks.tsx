@@ -12,9 +12,9 @@ interface NavLinksProps {
 const navLinks = [
   Section.About,
   Section.Skills,
+  Section.Projects,
   Section.Experience,
   Section.Qualifications,
-  Section.Projects,
   Section.Contact,
 ];
 
