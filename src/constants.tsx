@@ -212,7 +212,7 @@ Purpose: Lightweight persistence and learning tool`,
       'A focused chess learning platform built to train and reinforce opening theory through structured practice and repetition.',
     techStack: ['vibecoding', 'Next.js', 'React', 'TypeScript', 'Tailwind CSS'],
     imageUrl:
-      'https://res.cloudinary.com/dggnne5ja/image/upload/v1771578032/chess_project_placeholder.png',
+      'https://res.cloudinary.com/dggnne5ja/image/upload/v1771578032/Screenshot_from_2026-02-20_14-43-49_ygbnbp.png',
     status: 'Ongoing',
     fullDetails: `This is a personal chess learning project vibecoded primarily to train and improve understanding of chess openings.
 
@@ -239,7 +239,7 @@ Purpose: Personal learning + public training tool`,
       'A practice project built to strengthen React and JavaScript fundamentals by creating a simple note-taking application.',
     techStack: ['React', 'JavaScript', 'CSS', 'Vercel'],
     imageUrl:
-      'https://res.cloudinary.com/dggnne5ja/image/upload/v1771578032/my_notes_app_placeholder.png',
+      'https://res.cloudinary.com/dggnne5ja/image/upload/v1771578032/Screenshot_from_2026-02-20_14-43-49_ygbnbp.png',
     status: 'Completed',
     fullDetails: `This is a practice project focused on improving core React and JavaScript skills through hands-on application development.
 
