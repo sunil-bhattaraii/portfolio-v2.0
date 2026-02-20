@@ -5,17 +5,19 @@ import Qualifications from '../sections/Qualifications';
 import Projects from '../sections/Projects';
 import Contact from '../sections/Contact';
 import About from '@/sections/About';
+import ContactFooter from '@/components/contact/ContactFooter';
 
 export default function Home() {
   return (
     <main>
       <Hero />
-      <About/>
+      <About />
       <Skills />
       <Projects />
       <Experience />
       <Qualifications />
       <Contact />
+      <ContactFooter />
     </main>
   );
 }

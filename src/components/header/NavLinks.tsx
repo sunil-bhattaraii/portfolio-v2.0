@@ -68,13 +68,11 @@ const NavLinks: React.FC<NavLinksProps> = ({ mobile = false, onNavigate }) => {
   }, []);
 
   const scrollTo = (id: string) => {
-    document
-      .getElementById(id)
-      ?.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start',
-        inline: 'nearest',
-      });
+    document.getElementById(id)?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start',
+      inline: 'nearest',
+    });
     sessionStorage.setItem('nav-active', id);
     window.dispatchEvent(new Event(EVENT));
     onNavigate?.();
