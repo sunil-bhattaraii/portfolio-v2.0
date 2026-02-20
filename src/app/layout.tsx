@@ -9,7 +9,7 @@ import AIAssistant from '../components/AIAssistant';
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 
 export const metadata: Metadata = {
-  title: 'Sunil Bhattarai — Personal Portfolio',
+  title: 'Sunil Bhattarai - Personal Portfolio',
   description:
     'Portfolio of Sunil Bhattarai, a fullstack software developer based in Kathmandu, Nepal. Specialising in React, Next.js, Node.js, and scalable system design.',
   keywords: [
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
     locale: 'en_US',
     url: 'https://www.sunil-bhattarai.com.np',
     siteName: 'Sunil Bhattarai',
-    title: 'Sunil Bhattarai — Personal Portfolio',
+    title: 'Sunil Bhattarai - Personal Portfolio',
     description:
       'Fullstack developer crafting scalable systems and polished interfaces. Based in Kathmandu, Nepal.',
     images: [
@@ -39,13 +39,13 @@ export const metadata: Metadata = {
         url: 'https://www.sunil-bhattarai.com.np/heroImage.webp',
         width: 1200,
         height: 630,
-        alt: 'Sunil Bhattarai — Fullstack Software Developer',
+        alt: 'Sunil Bhattarai - Fullstack Software Developer',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Sunil Bhattarai — Personal Portfolio',
+    title: 'Sunil Bhattarai - Personal Portfolio',
     description:
       'Fullstack developer crafting scalable systems and polished interfaces. Based in Kathmandu, Nepal.',
     images: ['https://www.sunil-bhattarai.com.np/heroImage.webp'],
@@ -110,7 +110,7 @@ const jsonLd = {
       '@type': 'WebSite',
       '@id': 'https://www.sunil-bhattarai.com.np/#website',
       url: 'https://www.sunil-bhattarai.com.np',
-      name: 'Sunil Bhattarai — Personal Portfolio',
+      name: 'Sunil Bhattarai - Personal Portfolio',
       description:
         'Portfolio of Sunil Bhattarai, a fullstack software developer based in Kathmandu, Nepal.',
       author: { '@id': 'https://www.sunil-bhattarai.com.np/#person' },
@@ -120,7 +120,7 @@ const jsonLd = {
       '@type': 'ProfilePage',
       '@id': 'https://www.sunil-bhattarai.com.np/#profilepage',
       url: 'https://www.sunil-bhattarai.com.np',
-      name: 'Sunil Bhattarai — Personal Portfolio',
+      name: 'Sunil Bhattarai - Personal Portfolio',
       about: { '@id': 'https://www.sunil-bhattarai.com.np/#person' },
       mainEntity: { '@id': 'https://www.sunil-bhattarai.com.np/#person' },
     },

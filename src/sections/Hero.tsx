@@ -11,7 +11,7 @@ const Hero: React.FC = () => {
   return (
     <SectionWrapper
       id={Section.Hero}
-      className="relative pt-12! lg:pt-32! max-h-screen lg:max-h-none overflow-hidden lg:overflow-visible"
+      className="h-screen relative pt-12! lg:pt-32! max-h-screen lg:max-h-none overflow-hidden lg:overflow-visible"
       scrollTargetId={Section.Skills}
       showIndicatorOnMobile={true}
     >
@@ -26,7 +26,7 @@ const Hero: React.FC = () => {
             projects and enjoy learning new ways to solve problems and improve
             my skills.
           </div>
-          
+
           <SocialLinks />
           <HeroActions />
         </div>

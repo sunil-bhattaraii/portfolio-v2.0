@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useSyncExternalStore } from 'react';
+import React, { useEffect, useSyncExternalStore } from 'react';
 import { ChevronRight, Terminal } from 'lucide-react';
 import { Section } from '../../types';
 
@@ -17,6 +17,8 @@ const navLinks = [
   Section.Qualifications,
   Section.Contact,
 ];
+
+const allSections = [Section.Hero, ...navLinks];
 
 const EVENT = 'nav-section-change';
 
@@ -37,6 +39,33 @@ const NavLinks: React.FC<NavLinksProps> = ({ mobile = false, onNavigate }) => {
     getSnapshot,
     getServerSnapshot
   );
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        // Find the entry that is most visible and intersecting
+        const visible = entries
+          .filter((e) => e.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+
+        if (visible.length > 0) {
+          const id = visible[0].target.id;
+          if (id && id !== sessionStorage.getItem('nav-active')) {
+            sessionStorage.setItem('nav-active', id);
+            window.dispatchEvent(new Event(EVENT));
+          }
+        }
+      },
+      { threshold: 0.35 }
+    );
+
+    allSections.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) observer.observe(el);
+    });
+
+    return () => observer.disconnect();
+  }, []);
 
   const scrollTo = (id: string) => {
     document

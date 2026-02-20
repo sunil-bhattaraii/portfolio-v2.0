@@ -25,9 +25,7 @@ const SkillCard: React.FC<SkillCardProps> = ({ skill, index }) => (
       }`}
     />
 
-    <div className="mb-4 p-3 bg-white/5 rounded-xl text-sky-500 border border-white/5 group-hover:border-sky-500/30 group-hover:scale-110 group-hover:bg-sky-500/10 transition-all duration-500">
-      {getIcon(skill.icon)}
-    </div>
+
 
     <h3 className="text-sm font-bold text-white tracking-tight mb-5 group-hover:text-sky-400 transition-colors duration-300 leading-snug">
       {skill.name}

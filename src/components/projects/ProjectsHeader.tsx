@@ -9,7 +9,7 @@ const ProjectsHeader: React.FC = () => {
         <span className="w-8 h-[1px] bg-sky-500"></span>
         <span className="text-[10px] font-bold text-sky-500 uppercase tracking-[0.2em]">Deployment Log</span>
       </div>
-      <h2 className="text-4xl md:text-6xl font-black text-white tracking-tighter">Case Studies</h2>
+      <h2 className="text-4xl md:text-6xl font-black text-white tracking-tighter">My Projects</h2>
     </div>
   );
 };

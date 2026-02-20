@@ -17,7 +17,7 @@ const SectionWrapper: React.FC<SectionWrapperProps> = ({
   return (
     <section
       id={id}
-      className={`min-h-screen w-full flex flex-col items-center justify-start md:justify-center pt-32 pb-20 px-6 md:px-12 lg:px-16 overflow-hidden relative ${className}`}
+      className={`md:min-h-screen w-full flex flex-col items-center justify-start md:justify-center pt-32 pb-20 px-6 md:px-12 lg:px-16 overflow-hidden relative ${className}`}
     >
       <div
         className={`w-full ${maxWidth} mx-auto flex-1 flex flex-col justify-center lg:justify-start`}
