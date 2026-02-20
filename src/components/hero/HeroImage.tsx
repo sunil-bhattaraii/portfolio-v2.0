@@ -18,6 +18,7 @@ const HeroImage: React.FC = () => {
             alt="Sunil Bhattarai"
             placeholder="blur"
             blurDataURL={BLUR_DATA_URL}
+            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 320px, 512px"
             className="object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
           />
           <div className="absolute inset-0 bg-linear-to-t from-black/90 via-transparent to-transparent opacity-80 pointer-events-none" />
