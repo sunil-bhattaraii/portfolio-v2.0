@@ -14,7 +14,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onClick }) => {
       onClick={onClick}
       className="group relative cursor-pointer overflow-hidden bg-zinc-900/50 border border-white/5 transition-all hover:bg-zinc-900"
     >
-      <div className="aspect-video w-full overflow-hidden saturate-[0.4] brightness-90 opacity-75 group-hover:saturate-100 group-hover:brightness-100 group-hover:opacity-100 transition-all duration-700 relative">
+      <div className="aspect-video w-full overflow-hidden lg:saturate-[0.4] lg:brightness-90 lg:opacity-75 group-hover:saturate-100 group-hover:brightness-100 group-hover:opacity-100 transition-all duration-700 relative">
         <Image
           src={project.imageUrl}
           alt={project.title}
