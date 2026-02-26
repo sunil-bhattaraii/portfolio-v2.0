@@ -41,27 +41,27 @@ const SocialLinks: React.FC = () => {
     { icon: <Github size={18} />, href: 'https://github.com', label: 'GitHub' },
     {
       icon: <LeetCodeIcon size={18} />,
-      href: 'https://leetcode.com',
+      href: 'https://leetcode.com/u/sunil-bhattaraii/',
       label: 'LeetCode',
     },
     {
       icon: <Linkedin size={18} />,
-      href: 'https://linkedin.com',
+      href: 'hhttps://www.linkedin.com/in/sunil-bhattaraii/',
       label: 'LinkedIn',
     },
     {
       icon: <Instagram size={18} />,
-      href: 'https://instagram.com',
+      href: 'https://www.instagram.com/sunil._.bhattarai_/',
       label: 'Instagram',
     },
     {
       icon: <Facebook size={18} />,
-      href: 'https://facebook.com',
+      href: 'https://www.facebook.com/Sunil.bhattaraiiii',
       label: 'Facebook',
     },
     {
       icon: <WhatsAppIcon size={18} />,
-      href: 'https://wa.me/9779866325865',
+      href: 'https://wa.me/9779866325865?text=hello%20I%20came%20here%20from%20your%20portfolio%20',
       label: 'WhatsApp',
     },
   ];

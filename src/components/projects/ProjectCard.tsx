@@ -26,7 +26,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onClick }) => {
       onMouseLeave={() => setHovered(false)}
       className="group relative cursor-pointer overflow-hidden bg-zinc-900/50 border border-white/5 transition-all hover:bg-zinc-900"
     >
-      <div className="aspect-16/10 w-full overflow-hidden saturate-[0.4] brightness-90 opacity-75 group-hover:saturate-100 group-hover:brightness-100 group-hover:opacity-100 transition-all duration-700 relative">
+      <div className="aspect-video w-full overflow-hidden saturate-[0.4] brightness-90 opacity-75 group-hover:saturate-100 group-hover:brightness-100 group-hover:opacity-100 transition-all duration-700 relative">
         {/* Always render the image as base layer */}
         <Image
           src={project.imageUrl}

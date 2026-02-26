@@ -161,7 +161,7 @@ export const INITIAL_PROJECTS: Project[] = [
       'A simple project to showcase my hometown Menchhayayem Rural Municipality to the digital world in collaboration with my friend.',
     techStack: ['Next.js', 'MongoDB', 'Vercel', 'Tailwind'],
     imageUrl:
-      'https://res.cloudinary.com/dggnne5ja/image/upload/v1771578032/Screenshot_from_2026-02-20_14-43-49_ygbnbp.png',
+      'https://res.cloudinary.com/dggnne5ja/image/upload/v1772105556/hamro-menchhayayem_preview_wb7rzh.webp',
     status: 'Completed',
     fullDetails: `This is a project focused on promoting the tourism, cultural identity, and literature of Menchhayayem Rural Municipality
 
@@ -212,7 +212,7 @@ Purpose: Lightweight persistence and learning tool`,
       'A focused chess learning platform built to train and reinforce opening theory through structured practice and repetition.',
     techStack: ['vibecoding', 'Next.js', 'React', 'TypeScript', 'Tailwind CSS'],
     imageUrl:
-      'https://res.cloudinary.com/dggnne5ja/image/upload/v1771578032/Screenshot_from_2026-02-20_14-43-49_ygbnbp.png',
+      'https://res.cloudinary.com/dggnne5ja/image/upload/v1772105556/chess-trainer_preview_hq6qws.webp',
     status: 'Ongoing',
     fullDetails: `This is a personal chess learning project vibecoded primarily to train and improve understanding of chess openings.
 
@@ -239,7 +239,7 @@ Purpose: Personal learning + public training tool`,
       'A practice project built to strengthen React and JavaScript fundamentals by creating a simple note-taking application.',
     techStack: ['React', 'JavaScript', 'CSS', 'Vercel'],
     imageUrl:
-      'https://res.cloudinary.com/dggnne5ja/image/upload/v1771578032/Screenshot_from_2026-02-20_14-43-49_ygbnbp.png',
+      'https://res.cloudinary.com/dggnne5ja/image/upload/v1772105556/my-notes_preview_gioedz.webp',
     status: 'Completed',
     fullDetails: `This is a practice project focused on improving core React and JavaScript skills through hands-on application development.
 

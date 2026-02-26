@@ -12,21 +12,40 @@ const WhatsAppIcon = ({ size = 20 }: { size?: number }) => (
 
 const ContactSocials: React.FC = () => {
   const socials = [
-    { icon: <Linkedin size={20} />, href: "https://linkedin.com", label: "LinkedIn", color: "hover:text-sky-500" },
-    { icon: <WhatsAppIcon size={20} />, href: "https://wa.me/9779866325865", label: "WhatsApp", color: "hover:text-emerald-500" },
-    { icon: <Facebook size={20} />, href: "https://facebook.com", label: "Facebook", color: "hover:text-blue-600" },
-    { icon: <Instagram size={20} />, href: "https://instagram.com", label: "Instagram", color: "hover:text-pink-500" },
-    { icon: <Terminal size={20} />, href: "#", label: "Terminal", color: "hover:text-sky-500" },
+    {
+      icon: <Linkedin size={20} />,
+      href: 'https://www.linkedin.com/in/sunil-bhattaraii/',
+      label: 'LinkedIn',
+      color: 'hover:text-sky-500',
+    },
+    {
+      icon: <WhatsAppIcon size={20} />,
+      href: 'https://wa.me/9779866325865?text=hello%20I%20came%20here%20from%20your%20portfolio%20',
+      label: 'WhatsApp',
+      color: 'hover:text-emerald-500',
+    },
+    {
+      icon: <Facebook size={20} />,
+      href: 'https://www.facebook.com/Sunil.bhattaraiiii',
+      label: 'Facebook',
+      color: 'hover:text-blue-600',
+    },
+    {
+      icon: <Instagram size={20} />,
+      href: 'https://www.instagram.com/sunil._.bhattarai_',
+      label: 'Instagram',
+      color: 'hover:text-pink-500',
+    },
   ];
 
   return (
     <div className="mt-12 flex flex-wrap gap-4">
       {socials.map((social, i) => (
-        <a 
-          key={i} 
-          href={social.href} 
-          target="_blank" 
-          rel="noopener noreferrer" 
+        <a
+          key={i}
+          href={social.href}
+          target="_blank"
+          rel="noopener noreferrer"
           className={`p-4 bg-zinc-900 border border-white/5 rounded-lg text-zinc-500 ${social.color} transition-colors`}
           aria-label={social.label}
         >
