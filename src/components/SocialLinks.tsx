@@ -36,41 +36,109 @@ const WhatsAppIcon = ({ size = 18 }: { size?: number }) => (
   </svg>
 );
 
-const SocialLinks: React.FC = () => {
-  const socials = [
-    { icon: <Github size={18} />, href: 'https://github.com', label: 'GitHub' },
-    {
-      icon: <LeetCodeIcon size={18} />,
-      href: 'https://leetcode.com/u/sunil-bhattaraii/',
-      label: 'LeetCode',
-    },
-    {
-      icon: <Linkedin size={18} />,
-      href: 'hhttps://www.linkedin.com/in/sunil-bhattaraii/',
-      label: 'LinkedIn',
-    },
-    {
-      icon: <Instagram size={18} />,
-      href: 'https://www.instagram.com/sunil._.bhattarai_/',
-      label: 'Instagram',
-    },
-    {
-      icon: <Facebook size={18} />,
-      href: 'https://www.facebook.com/Sunil.bhattaraiiii',
-      label: 'Facebook',
-    },
-    {
-      icon: <WhatsAppIcon size={18} />,
-      href: 'https://wa.me/9779866325865?text=hello%20I%20came%20here%20from%20your%20portfolio%20',
-      label: 'WhatsApp',
-    },
-  ];
+type Variant = 'hero' | 'contact';
+
+export interface SocialLinksProps {
+  variant?: Variant;
+}
+
+interface SocialDef {
+  id: string;
+  icon: (size: number) => React.ReactNode;
+  href: string;
+  label: string;
+}
+
+const SOCIAL_DEFS: SocialDef[] = [
+  {
+    id: 'github',
+    icon: (size) => <Github size={size} />,
+    href: 'https://github.com',
+    label: 'GitHub',
+  },
+  {
+    id: 'leetcode',
+    icon: (size) => <LeetCodeIcon size={size} />,
+    href: 'https://leetcode.com/u/sunil-bhattaraii/',
+    label: 'LeetCode',
+  },
+  {
+    id: 'linkedin',
+    icon: (size) => <Linkedin size={size} />,
+    href: 'https://www.linkedin.com/in/sunil-bhattaraii/',
+    label: 'LinkedIn',
+  },
+  {
+    id: 'instagram',
+    icon: (size) => <Instagram size={size} />,
+    href: 'https://www.instagram.com/sunil._.bhattarai_/',
+    label: 'Instagram',
+  },
+  {
+    id: 'facebook',
+    icon: (size) => <Facebook size={size} />,
+    href: 'https://www.facebook.com/Sunil.bhattaraiiii',
+    label: 'Facebook',
+  },
+  {
+    id: 'whatsapp',
+    icon: (size) => <WhatsAppIcon size={size} />,
+    href: 'https://wa.me/9779866325865?text=hello%20I%20came%20here%20from%20your%20portfolio%20',
+    label: 'WhatsApp',
+  },
+];
+
+// Ordered IDs for each variant
+const HERO_IDS = [
+  'github',
+  'leetcode',
+  'linkedin',
+  'instagram',
+  'facebook',
+  'whatsapp',
+];
+const CONTACT_IDS = ['linkedin', 'whatsapp', 'facebook', 'instagram'];
+
+// Individual hover colors for the contact variant
+const CONTACT_COLORS: Record<string, string> = {
+  linkedin: 'hover:text-sky-500',
+  whatsapp: 'hover:text-emerald-500',
+  facebook: 'hover:text-blue-600',
+  instagram: 'hover:text-pink-500',
+};
+
+const SocialLinks: React.FC<SocialLinksProps> = ({ variant = 'hero' }) => {
+  const ids = variant === 'contact' ? CONTACT_IDS : HERO_IDS;
+  const iconSize = variant === 'contact' ? 20 : 18;
+
+  const visibleSocials = ids
+    .map((id) => SOCIAL_DEFS.find((s) => s.id === id)!)
+    .filter(Boolean);
+
+  if (variant === 'contact') {
+    return (
+      <div className="mt-12 flex flex-wrap gap-4">
+        {visibleSocials.map((social) => (
+          <a
+            key={social.id}
+            href={social.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`p-4 bg-zinc-900 border border-white/5 rounded-lg text-zinc-500 ${CONTACT_COLORS[social.id] ?? 'hover:text-white'} transition-colors`}
+            aria-label={social.label}
+          >
+            {social.icon(iconSize)}
+          </a>
+        ))}
+      </div>
+    );
+  }
 
   return (
     <div className="flex items-center justify-center lg:justify-start gap-3 md:gap-4 mb-8 md:mb-10 animate-fade-left [animation-delay:240ms]">
-      {socials.map((social, i) => (
+      {visibleSocials.map((social) => (
         <a
-          key={i}
+          key={social.id}
           href={social.href}
           target="_blank"
           rel="noopener noreferrer"
@@ -78,7 +146,7 @@ const SocialLinks: React.FC = () => {
           aria-label={social.label}
         >
           <span className="group-hover:scale-110 transition-transform">
-            {social.icon}
+            {social.icon(iconSize)}
           </span>
         </a>
       ))}

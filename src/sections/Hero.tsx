@@ -3,7 +3,7 @@ import SectionWrapper from '../components/SectionWrapper';
 import { Section } from '../types';
 import HeroTitle from '../components/hero/HeroTitle';
 import HeroTerminal from '../components/hero/HeroTerminal';
-import SocialLinks from '../components/hero/SocialLinks';
+import SocialLinks from '../components/SocialLinks';
 import HeroActions from '../components/hero/HeroActions';
 import HeroImage from '../components/hero/HeroImage';
 
