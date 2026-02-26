@@ -23,7 +23,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onClick }) => {
           className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-700"
         />
       </div>
-      <div className="p-10 border-t border-white/5">
+      <div className="p-4 md:p-8 lg:p-10 border-t border-white/5">
         <div className="flex justify-between items-start mb-6">
           <div className="flex flex-wrap gap-4">
             {project.techStack.slice(0, 2).map((tech) => (
