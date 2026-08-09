@@ -149,8 +149,11 @@ class Star {
         const norm = distm || 1;
         this.vx += (dxm / norm) * force * attractionStrength;
         this.vy += (dym / norm) * force * attractionStrength;
+        const targetOpacity = 0.3 + force * 0.7;
+        this.opacity += (targetOpacity - this.opacity) * 0.2;
+      } else {
+        this.opacity += (0.3 - this.opacity) * 0.05;
       }
-      this.opacity = Math.min(0.9, this.opacity + 0.05);
     } else {
       this.opacity = Math.max(this.baseOpacity, this.opacity - 0.02);
       if (this.chainTimer > 0) {
@@ -406,7 +409,7 @@ const InteractiveBackground: React.FC = () => {
       {isLargeScreen && (
         <canvas
           ref={canvasRef}
-          className="absolute inset-0 pointer-events-none opacity-25"
+          className="absolute inset-0 pointer-events-none opacity-50"
         />
       )}
     </div>

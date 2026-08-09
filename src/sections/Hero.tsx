@@ -14,8 +14,8 @@ const Hero: React.FC = () => {
       scrollTargetId={Section.Skills}
       showIndicatorOnMobile={true}
     >
-      <div className="flex flex-col lg:flex-row items-center justify-center lg:justify-between w-full gap-6 md:gap-8 lg:gap-18 h-full">
-        <div className="order-2 lg:order-1 w-full lg:max-w-2xl xl:max-w-3xl">
+      <div className="flex flex-col lg:flex-row items-center justify-center  w-full gap-6 md:gap-8 lg:gap-48 h-full">
+        <div className="order-2 lg:order-1">
           <HeroTitle />
           <SocialLinks />
           <HeroActions />
