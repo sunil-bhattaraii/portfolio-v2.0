@@ -3,7 +3,7 @@ import React from 'react';
 const HeroTitle: React.FC = () => {
   return (
     <div className="text-center lg:text-left animate-fade-left">
-      <h1 className="text-4xl sm:text-5xl lg:text-9xl font-black text-white mb-1 tracking-tighter leading-[0.85] select-none">
+      <h1 className="text-4xl sm:text-5xl lg:text-8xl font-black text-white mb-1 tracking-tighter leading-[0.85] select-none">
         Sunil <br className="hidden lg:block" />
         Bhattarai
       </h1>

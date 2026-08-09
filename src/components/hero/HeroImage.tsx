@@ -5,7 +5,7 @@ const BLUR_DATA_URL = `data:image/webp;base64,UklGRpYHAABXRUJQVlA4WAoAAAAgAAAAYg
 
 const HeroImage: React.FC = () => {
   return (
-    <div className="order-1 lg:order-2 w-1/2 lg:w-full lg:max-w-xl xl:max-w-2xl flex justify-center lg:justify-end animate-fade-right [animation-delay:180ms]">
+    <div className="order-1 lg:order-2 w-1/2 lg:w-full lg:max-w-lg xl:max-w-lg flex justify-center lg:justify-end animate-fade-right [animation-delay:180ms]">
       <div className="relative w-full aspect-square group max-w-50 sm:max-w-70 md:max-w-[320px] lg:max-w-none">
         <div className="absolute -top-3 md:-top-6 -right-3 md:-right-6 w-12 md:w-32 h-12 md:h-32 border-t-2 border-r-2 border-sky-500/30 rounded-tr-3xl md:rounded-tr-[3rem] group-hover:border-sky-500 transition-all duration-500" />
         <div className="absolute -bottom-3 md:-bottom-4 -left-3 md:-left-6 w-12 md:w-32 h-12 md:h-32 border-b-2 border-l-2 border-sky-500/30 rounded-bl-3xl md:rounded-bl-[3rem] group-hover:border-sky-500 transition-all duration-500" />
