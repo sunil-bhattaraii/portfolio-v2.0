@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useSyncExternalStore } from 'react';
+import Link from 'next/link';
 import { ChevronRight, Terminal } from 'lucide-react';
 import { Section } from '../../types';
 
@@ -110,9 +111,10 @@ const NavLinks: React.FC<NavLinksProps> = ({ mobile = false, onNavigate }) => {
   return (
     <>
       {/* Logo */}
-      <div
-        className="flex items-center gap-3 cursor-pointer group hover:scale-105 transition-all"
+      <Link
+        href="/"
         onClick={() => scrollTo(Section.Hero)}
+        className="flex items-center gap-3 cursor-pointer group hover:scale-105 transition-all"
       >
         <div className="w-fit p-1 aspect-square rounded-lg flex items-center justify-center group-hover:border-sky-500/50">
           <Terminal className="text-sky-500 h-3.75 lg:h-4.5 transition-transform" />
@@ -120,7 +122,7 @@ const NavLinks: React.FC<NavLinksProps> = ({ mobile = false, onNavigate }) => {
         <span className="text-xl font-black tracking-tight  text-white">
           linus<span className="text-sky-400">.dev</span>
         </span>
-      </div>
+      </Link>
 
       {/* Desktop nav */}
       <nav className="hidden lg:flex items-center gap-10">

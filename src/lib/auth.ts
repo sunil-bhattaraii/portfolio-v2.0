@@ -1,7 +1,33 @@
 import NextAuth from 'next-auth';
 import GitHub from 'next-auth/providers/github';
+import { cookies } from 'next/headers';
 import { dbConnect } from './db';
 import { AllowlistModel } from '../models/Allowlist';
+
+const ADMIN_COOKIE = 'isAdmin';
+const ADMIN_COOKIE_MAX_AGE = 60 * 60 * 24 * 30; // 30 days
+
+async function setAdminCookie() {
+  const store = await cookies();
+  store.set(ADMIN_COOKIE, 'true', {
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production',
+    path: '/',
+    maxAge: ADMIN_COOKIE_MAX_AGE,
+  });
+}
+
+async function clearAdminCookie() {
+  const store = await cookies();
+  store.set(ADMIN_COOKIE, '', {
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production',
+    path: '/',
+    maxAge: 0,
+  });
+}
 
 interface GitHubEmail {
   email: string;
@@ -77,6 +103,15 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         session.user.email = token.email as string;
       }
       return session;
+    },
+  },
+  events: {
+    async signIn() {
+      // Only reached for allowlisted users (signIn callback gates access).
+      await setAdminCookie();
+    },
+    async signOut() {
+      await clearAdminCookie();
     },
   },
 });

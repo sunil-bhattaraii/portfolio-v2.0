@@ -2,9 +2,7 @@ import React from 'react';
 import './globals.css';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
-import Header from '../components/Header';
 import InteractiveBackground from '../components/InteractiveBackground';
-import AIAssistant from '../components/AIAssistant';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 
@@ -147,9 +145,7 @@ export default function RootLayout({
           </div>
 
           <div className="relative z-10 flex flex-col min-h-screen">
-            <Header />
-            <div className="grow">{children}</div>
-            <AIAssistant />
+            {children}
           </div>
         </div>
       </body>
