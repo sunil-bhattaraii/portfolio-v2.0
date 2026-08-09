@@ -6,9 +6,43 @@ import { ExperienceModel } from '@/models/Experience';
 import { QualificationModel } from '@/models/Qualification';
 import { SocialModel } from '@/models/Social';
 import { SiteConfigModel } from '@/models/SiteConfig';
+import { AIConfigModel } from '@/models/AIConfig';
+import { AllowlistModel } from '@/models/Allowlist';
+import { DEFAULT_AI_INSTRUCTION } from './ai-instruction';
 import type { Skill, Project, Experience, Qualification, Social, SiteConfigData } from '@/types';
 
 type Nullable<T> = T | null;
+
+/** The AI persona instruction saved by the admin (may be empty = use default). */
+export async function getAIStoredInstruction(): Promise<string> {
+  try {
+    await dbConnect();
+    const doc = await AIConfigModel.findOne({ key: 'ai' }).lean();
+    return doc?.instruction?.trim() ?? '';
+  } catch (error) {
+    console.error('getAIStoredInstruction failed:', error);
+    return '';
+  }
+}
+
+/** The effective AI instruction: saved value, or the built-in default. */
+export async function getAIInstruction(): Promise<string> {
+  const stored = await getAIStoredInstruction();
+  return stored || DEFAULT_AI_INSTRUCTION;
+}
+
+export async function getAllowlist(): Promise<
+  { email: string; createdAt?: Date; id: string }[]
+> {
+  try {
+    await dbConnect();
+    const docs = await AllowlistModel.find().sort({ createdAt: -1 }).lean();
+    return docs.map(serialize);
+  } catch (error) {
+    console.error('getAllowlist failed:', error);
+    return [];
+  }
+}
 
 /** Reads site config directly from Mongo (no HTTP self-fetch). */
 export async function getSiteConfig(): Promise<Nullable<SiteConfigData>> {

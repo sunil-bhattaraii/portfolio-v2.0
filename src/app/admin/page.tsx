@@ -1,5 +1,13 @@
 import Link from 'next/link';
-import { fetchAdmin } from '@/lib/api';
+import {
+  getSkills,
+  getProjects,
+  getExperience,
+  getQualifications,
+  getSocials,
+  getSiteConfig,
+  getAllowlist,
+} from '@/lib/queries';
 import { Card } from '@/components/admin/ui';
 import {
   Code2,
@@ -10,7 +18,6 @@ import {
   Settings,
   ShieldCheck,
 } from 'lucide-react';
-import type { Skill, Project, Qualification, Experience, Social, SiteConfigData } from '@/types';
 
 export const dynamic = 'force-dynamic';
 
@@ -25,13 +32,13 @@ const STATS = [
 export default async function AdminDashboard() {
   const [skills, projects, qualifications, experience, socials, config, allowlist] =
     await Promise.all([
-      fetchAdmin<Skill[]>('/api/skills'),
-      fetchAdmin<Project[]>('/api/projects'),
-      fetchAdmin<Qualification[]>('/api/qualifications'),
-      fetchAdmin<Experience[]>('/api/experience'),
-      fetchAdmin<Social[]>('/api/socials'),
-      fetchAdmin<SiteConfigData>('/api/site-config'),
-      fetchAdmin<{ email: string }[]>('/api/allowlist'),
+      getSkills(),
+      getProjects(),
+      getQualifications(),
+      getExperience(),
+      getSocials(),
+      getSiteConfig(),
+      getAllowlist(),
     ]);
 
   const counts = {
@@ -44,7 +51,7 @@ export default async function AdminDashboard() {
 
   const name = config?.hero?.name || 'Not set';
   const email = config?.contact?.email || 'Not set';
-  const allowlistCount = allowlist?.length ?? 0;
+  const allowlistCount = allowlist.length;
 
   return (
     <div>

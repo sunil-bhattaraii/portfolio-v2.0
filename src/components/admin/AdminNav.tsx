@@ -11,6 +11,7 @@ import {
   Share2,
   Settings,
   ShieldCheck,
+  Bot,
 } from 'lucide-react';
 
 const NAV_ITEMS = [
@@ -21,6 +22,7 @@ const NAV_ITEMS = [
   { href: '/admin/qualifications', label: 'Qualifications', icon: GraduationCap },
   { href: '/admin/socials', label: 'Socials', icon: Share2 },
   { href: '/admin/site-config', label: 'Site Config', icon: Settings },
+  { href: '/admin/ai-config', label: 'AI Persona', icon: Bot },
   { href: '/admin/allowlist', label: 'Allowlist', icon: ShieldCheck },
 ];
 
