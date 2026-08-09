@@ -2,8 +2,12 @@ import React from 'react';
 import { Mail } from 'lucide-react';
 import NavLinks from './header/NavLinks';
 import MobileMenu from './header/MobileMenu';
+import { getSiteConfig } from '@/lib/queries';
 
-const Header: React.FC = () => {
+const Header: React.FC = async () => {
+  const config = await getSiteConfig();
+  const email = config?.contact?.email ?? '';
+
   return (
     <header className="select-none fixed top-0 left-0 w-full z-50 bg-zinc-950/10 backdrop-blur-md border-b border-white/0 py-1 md:py-2 lg:py-3 xl:py-4">
       <div className="max-w-7xl mx-auto px-6 lg:px-12 flex items-center justify-between">
@@ -11,8 +15,9 @@ const Header: React.FC = () => {
         <NavLinks />
 
         {/* Mail Me — server-rendered static link */}
-        <a
-          href="mailto:bhattaraisunil76@gmail.com"
+        {email && (
+          <a
+            href={`mailto:${email}`}
           className="group relative px-7 py-3 bg-zinc-950 hover:bg-sky-600 text-white text-[11px] font-black uppercase tracking-widest rounded-full border border-sky-500/30 transition-all hover:border-sky-500 hover:shadow-[0_0_25px_rgba(14,165,233,0.25)] hidden lg:flex items-center gap-3 active:scale-95 overflow-hidden"
         >
           <div className="absolute inset-0 bg-linear-to-tr from-sky-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -24,7 +29,8 @@ const Header: React.FC = () => {
             <span>Mail Me</span>
           </div>
           <div className="absolute top-0 -left-full w-full h-full bg-linear-to-r from-transparent via-white/5 to-transparent skew-x-[-25deg] transition-all duration-1000 group-hover:left-[200%]" />
-        </a>
+          </a>
+        )}
 
         {/* Mobile menu — client (hamburger toggle + sliding panel + nav links) */}
         <MobileMenu />

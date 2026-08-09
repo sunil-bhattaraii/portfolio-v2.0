@@ -3,8 +3,11 @@ import SectionWrapper from '../components/SectionWrapper';
 import { Section } from '../types';
 import ProjectsHeader from '../components/projects/ProjectsHeader';
 import ProjectsGrid from '../components/projects/ProjectsGrid';
+import { getProjects } from '@/lib/queries';
 
-const Projects: React.FC = () => {
+const Projects: React.FC = async () => {
+  const projects = await getProjects();
+
   return (
     <SectionWrapper 
       id={Section.Projects} 
@@ -12,7 +15,7 @@ const Projects: React.FC = () => {
       scrollTargetId={Section.Contact}
     >
       <ProjectsHeader />
-      <ProjectsGrid />
+      <ProjectsGrid projects={projects} />
     </SectionWrapper>
   );
 };

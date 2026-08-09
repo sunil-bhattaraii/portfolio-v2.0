@@ -1,11 +1,13 @@
 import React from 'react';
 import SectionWrapper from '../components/SectionWrapper';
-import { INITIAL_EXPERIENCES } from '../constants';
 import { Section } from '../types';
 import ExperienceHeader from '../components/experience/ExperienceHeader';
 import ExperienceCard from '../components/experience/ExperienceCard';
+import { getExperience } from '@/lib/queries';
 
-const Experience: React.FC = () => {
+const Experience: React.FC = async () => {
+  const experiences = await getExperience();
+
   return (
     <SectionWrapper
       id={Section.Experience}
@@ -14,13 +16,13 @@ const Experience: React.FC = () => {
     >
       <ExperienceHeader />
       <div className="space-y-12">
-        {INITIAL_EXPERIENCES.length === 0 ? (
+        {experiences.length === 0 ? (
           <p className="text-zinc-500 text-sm font-medium tracking-widest uppercase">
             New experiences coming soon
           </p>
         ) : (
-          INITIAL_EXPERIENCES.map((exp, index) => (
-            <ExperienceCard key={exp.id} exp={exp} index={index} />
+          experiences.map((exp, index) => (
+            <ExperienceCard key={exp.id ?? index} exp={exp} index={index} />
           ))
         )}
       </div>

@@ -1,28 +1,40 @@
-"use client";
+'use client';
 
 import React from 'react';
 import { Mail, Phone, MapPin } from 'lucide-react';
 
-const ContactInfo: React.FC = () => {
+interface ContactContent {
+  email: string;
+  phone: string;
+  location: string;
+}
+
+interface ContactInfoProps {
+  contact: ContactContent;
+}
+
+const ContactInfo: React.FC<ContactInfoProps> = ({ contact }) => {
   const contactMethods = [
     {
       icon: <Mail size={24} />,
-      label: "Email Protocol",
-      value: "bhattaraisunil76@gmail.com",
-      href: "mailto:bhattaraisunil76@gmail.com"
+      label: 'Email Protocol',
+      value: contact.email,
+      href: contact.email ? `mailto:${contact.email}` : undefined,
     },
     {
       icon: <Phone size={24} />,
-      label: "Secure Line",
-      value: "+977-9866325865",
-      href: "tel:+9779866325865"
+      label: 'Secure Line',
+      value: contact.phone,
+      href: contact.phone ? `tel:${contact.phone.replace(/\s/g, '')}` : undefined,
     },
     {
       icon: <MapPin size={24} />,
-      label: "Base Node",
-      value: "Kathmandu, Nepal"
-    }
-  ];
+      label: 'Base Node',
+      value: contact.location,
+    },
+  ].filter((m) => m.value);
+
+  if (contactMethods.length === 0) return null;
 
   return (
     <div className="space-y-8">

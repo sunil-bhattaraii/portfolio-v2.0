@@ -3,13 +3,17 @@
 import React, { useState } from 'react';
 import { GraduationCap, Plus, Minus } from 'lucide-react';
 import QualificationItem from './QualificationItem';
-import { INITIAL_QUALIFICATIONS } from '../../constants';
+import type { Qualification } from '../../types';
 
-const QualificationsList: React.FC = () => {
+interface QualificationsListProps {
+  qualifications: Qualification[];
+}
+
+const QualificationsList: React.FC<QualificationsListProps> = ({ qualifications }) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
-  const mainDegrees = INITIAL_QUALIFICATIONS.filter((q) => q.type === 'degree');
-  const certifications = INITIAL_QUALIFICATIONS.filter(
+  const mainDegrees = qualifications.filter((q) => q.type === 'degree');
+  const certifications = qualifications.filter(
     (q) => q.type === 'certification'
   );
 

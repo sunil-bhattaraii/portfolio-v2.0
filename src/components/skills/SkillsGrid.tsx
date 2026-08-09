@@ -1,8 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { INITIAL_SKILLS } from '../../constants';
-import { SkillCategory } from '../../types';
+import type { Skill, SkillCategory } from '../../types';
 import SkillCard from './SkillCard';
 
 const CATEGORIES: { label: string; value: 'All' | SkillCategory }[] = [
@@ -14,13 +13,17 @@ const CATEGORIES: { label: string; value: 'All' | SkillCategory }[] = [
   { label: 'Design', value: 'Design' },
 ];
 
-const SkillsGrid: React.FC = () => {
+interface SkillsGridProps {
+  skills: Skill[];
+}
+
+const SkillsGrid: React.FC<SkillsGridProps> = ({ skills }) => {
   const [active, setActive] = useState<'All' | SkillCategory>('Core');
 
   const filtered =
     active === 'All'
-      ? INITIAL_SKILLS
-      : INITIAL_SKILLS.filter((s) => s.categories.includes(active));
+      ? skills
+      : skills.filter((s) => s.categories.includes(active));
 
   return (
     <>

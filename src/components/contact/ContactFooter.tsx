@@ -2,11 +2,15 @@
 
 import React from 'react';
 
-const ContactFooter: React.FC = () => {
+interface ContactFooterProps {
+  version?: string;
+}
+
+const ContactFooter: React.FC<ContactFooterProps> = ({ version = '' }) => {
   return (
     <footer className="w-full text-center bg-zinc-500/5 py-2">
         <p className="text-zinc-600 text-[10px] font-bold uppercase tracking-[0.3em]">
-          &copy; {new Date().getFullYear()} Sunil Bhattarai — v1.4.2
+          &copy; {new Date().getFullYear()} Sunil Bhattarai{version ? ` — ${version}` : ''}
         </p>
     </footer>
   );

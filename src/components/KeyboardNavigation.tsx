@@ -51,9 +51,10 @@ const KeyboardNavigation: React.FC = () => {
       }
     };
 
-    const handleExternalScroll = (e: any) => {
-      if (e.detail?.internal) return;
-      const targetId = e.detail?.id;
+    const handleExternalScroll = (e: Event) => {
+      const detail = (e as CustomEvent<{ id?: string; internal?: boolean }>).detail;
+      if (detail?.internal) return;
+      const targetId = detail?.id;
       if (targetId) {
         isScrolling.current = true;
         const duration = 1500;

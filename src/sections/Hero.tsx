@@ -5,8 +5,14 @@ import HeroTitle from '../components/hero/HeroTitle';
 import SocialLinks from '../components/SocialLinks';
 import HeroActions from '../components/hero/HeroActions';
 import HeroImage from '../components/hero/HeroImage';
+import { getSiteConfig, getSocials } from '@/lib/queries';
 
-const Hero: React.FC = () => {
+const Hero: React.FC = async () => {
+  const [config, socials] = await Promise.all([getSiteConfig(), getSocials()]);
+
+  const hero = config?.hero ?? { name: '', role: '' };
+  const heroSocials = (socials ?? []).filter((s) => s.showInHero);
+
   return (
     <SectionWrapper
       id={Section.Hero}
@@ -16,8 +22,8 @@ const Hero: React.FC = () => {
     >
       <div className="flex flex-col lg:flex-row items-center justify-center  w-full gap-6 md:gap-8 lg:gap-48 h-full">
         <div className="order-2 lg:order-1">
-          <HeroTitle />
-          <SocialLinks />
+          <HeroTitle name={hero.name} role={hero.role} />
+          <SocialLinks socials={heroSocials} variant="hero" />
           <HeroActions />
         </div>
 

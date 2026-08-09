@@ -45,6 +45,34 @@ export interface Project {
   fullDetails?: string;
 }
 
+export interface Social {
+  id?: string;
+  platform: string;
+  label: string;
+  href: string;
+  order: number;
+  showInHero: boolean;
+  showInContact: boolean;
+}
+
+export interface SiteConfigData {
+  hero: {
+    name: string;
+    role: string;
+  };
+  about: {
+    intro: string[];
+    facts: { icon: string; label: string; value: string }[];
+    hobbies: { icon: string; title: string }[];
+  };
+  contact: {
+    email: string;
+    phone: string;
+    location: string;
+  };
+  version: string;
+}
+
 export enum Section {
   Hero = 'home',
   About = 'about',

@@ -6,15 +6,20 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "seed": "node --env-file=.env --import tsx scripts/seed.ts",
+    "seed:force": "node --env-file=.env --import tsx scripts/seed.ts --force"
   },
   "dependencies": {
+    "@google/genai": "^1.41.0",
+    "cloudinary": "^2.10.0",
+    "framer-motion": "^12.34.0",
+    "lucide-react": "^0.564.0",
+    "mongoose": "^9.9.1",
     "next": "16.1.6",
+    "next-auth": "^5.0.0-beta.32",
     "react": "19.2.3",
     "react-dom": "19.2.3",
-    "lucide-react": "^0.564.0",
-    "@google/genai": "^1.41.0",
-    "framer-motion": "^12.34.0",
     "react-markdown": "^10.1.0"
   },
   "devDependencies": {
@@ -25,6 +30,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
     "tailwindcss": "^4",
+    "tsx": "^4.23.11",
     "typescript": "^5"
   }
 }
