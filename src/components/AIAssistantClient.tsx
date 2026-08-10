@@ -171,6 +171,7 @@ const AIAssistantClient: React.FC = () => {
   const [toolActivity, setToolActivity] = useState<ToolActivity[]>([]);
   const [notices, setNotices] = useState<Notice[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   const messagesRef = useRef<ChatMessage[]>(messages);
   const historyRef = useRef<OpenAIMessage[]>([]);
@@ -196,7 +197,7 @@ const AIAssistantClient: React.FC = () => {
 
   useEffect(() => {
     if (isLoading) {
-      messagesEndRef.current?.scrollIntoView({ behavior: 'auto' });
+      scrollLastUserMessageToTop();
     }
   }, [isLoading]);
 
@@ -221,6 +222,22 @@ const AIAssistantClient: React.FC = () => {
 
   const removeNotice = (id: number) => {
     setNotices((prev) => prev.filter((n) => n.id !== id));
+  };
+
+  const scrollLastUserMessageToTop = () => {
+    const container = scrollRef.current;
+    if (!container) return;
+    const userMessages = container.querySelectorAll('[data-role="user"]');
+    const last = userMessages[userMessages.length - 1] as
+      | HTMLElement
+      | undefined;
+    if (!last) return;
+    const containerTop = container.getBoundingClientRect().top;
+    const elTop = last.getBoundingClientRect().top;
+    container.scrollTo({
+      top: container.scrollTop + (elTop - containerTop) - 16,
+      behavior: 'smooth',
+    });
   };
 
   const buildUiStateContext = () => {
@@ -634,7 +651,7 @@ const AIAssistantClient: React.FC = () => {
               <div className="flex items-center gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
                 <h4 className="text-xs font-black text-white uppercase tracking-wider">
-                  Sunil Persona
+                  Sunil&apos;s Persona
                 </h4>
               </div>
             </div>
@@ -646,13 +663,17 @@ const AIAssistantClient: React.FC = () => {
             </button>
           </div>
 
-          <div className="flex-1 overflow-y-auto p-4 space-y-5 custom-scrollbar bg-zinc-950/20">
+          <div
+            ref={scrollRef}
+            className="flex-1 overflow-y-auto p-4 space-y-5 custom-scrollbar bg-zinc-950/20"
+          >
             {messages.map((msg, i) => {
               const isLastReply =
                 msg.role === 'ai' && i === messages.length - 1;
               return (
                 <div
                   key={i}
+                  data-role={msg.role}
                   className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
                 >
                   <div
