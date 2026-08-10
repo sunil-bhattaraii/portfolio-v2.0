@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { dbConnect } from '@/lib/db';
 import { SocialModel } from '@/models/Social';
-import { requireAdmin, serializeMany, invalidate } from '@/lib/api';
+import { requireAdmin, serialize, serializeMany, invalidate } from '@/lib/api';
 
 export const dynamic = 'force-dynamic';
 
@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
       showInContact: Boolean(body.showInContact),
     });
     invalidate('socials');
-    return NextResponse.json(social, { status: 201 });
+    return NextResponse.json(serialize(social), { status: 201 });
   } catch (error) {
     console.error('POST /api/socials:', error);
     return NextResponse.json({ error: 'Failed to create social' }, { status: 500 });

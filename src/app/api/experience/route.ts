@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { dbConnect } from '@/lib/db';
 import { ExperienceModel } from '@/models/Experience';
-import { requireAdmin, serializeMany, invalidate } from '@/lib/api';
+import { requireAdmin, serialize, serializeMany, invalidate } from '@/lib/api';
 
 export const dynamic = 'force-dynamic';
 
@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
       order: Number(body.order) || 0,
     });
     invalidate('experience');
-    return NextResponse.json(experience, { status: 201 });
+    return NextResponse.json(serialize(experience), { status: 201 });
   } catch (error) {
     console.error('POST /api/experience:', error);
     return NextResponse.json({ error: 'Failed to create experience' }, { status: 500 });

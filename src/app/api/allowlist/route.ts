@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { dbConnect } from '@/lib/db';
 import { AllowlistModel } from '@/models/Allowlist';
-import { requireAdmin } from '@/lib/api';
+import { requireAdmin, serialize, serializeMany } from '@/lib/api';
 
 export const dynamic = 'force-dynamic';
 
@@ -12,7 +12,7 @@ export async function GET() {
   try {
     await dbConnect();
     const emails = await AllowlistModel.find().sort({ createdAt: -1 }).lean();
-    return NextResponse.json(emails);
+    return NextResponse.json(serializeMany(emails));
   } catch (error) {
     console.error('GET /api/allowlist:', error);
     return NextResponse.json({ error: 'Failed to fetch allowlist' }, { status: 500 });
@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
       );
     }
     const entry = await AllowlistModel.create({ email });
-    return NextResponse.json(entry, { status: 201 });
+    return NextResponse.json(serialize(entry), { status: 201 });
   } catch (error) {
     console.error('POST /api/allowlist:', error);
     return NextResponse.json({ error: 'Failed to add email' }, { status: 500 });

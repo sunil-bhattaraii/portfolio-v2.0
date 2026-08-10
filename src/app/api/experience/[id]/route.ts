@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { dbConnect } from '@/lib/db';
 import { ExperienceModel } from '@/models/Experience';
-import { requireAdmin, invalidate } from '@/lib/api';
+import { requireAdmin, serialize, invalidate } from '@/lib/api';
 
 export const dynamic = 'force-dynamic';
 
@@ -31,7 +31,7 @@ export async function PATCH(req: NextRequest, { params }: Params) {
       return NextResponse.json({ error: 'Not found' }, { status: 404 });
     }
     invalidate('experience');
-    return NextResponse.json(experience);
+    return NextResponse.json(serialize(experience));
   } catch (error) {
     console.error('PATCH /api/experience/[id]:', error);
     return NextResponse.json({ error: 'Failed to update experience' }, { status: 500 });

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { dbConnect } from '@/lib/db';
 import { SkillModel } from '@/models/Skill';
-import { requireAdmin, serializeMany, invalidate } from '@/lib/api';
+import { requireAdmin, serialize, serializeMany, invalidate } from '@/lib/api';
 
 export const dynamic = 'force-dynamic';
 
@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
       order: Number(body.order) || 0,
     });
     invalidate('skills');
-    return NextResponse.json(skill, { status: 201 });
+    return NextResponse.json(serialize(skill), { status: 201 });
   } catch (error) {
     console.error('POST /api/skills:', error);
     return NextResponse.json({ error: 'Failed to create skill' }, { status: 500 });

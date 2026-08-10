@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { dbConnect } from '@/lib/db';
 import { ProjectModel } from '@/models/Project';
-import { requireAdmin, invalidate } from '@/lib/api';
+import { requireAdmin, serialize, invalidate } from '@/lib/api';
 
 export const dynamic = 'force-dynamic';
 
@@ -34,7 +34,7 @@ export async function PATCH(req: NextRequest, { params }: Params) {
       return NextResponse.json({ error: 'Not found' }, { status: 404 });
     }
     invalidate('projects');
-    return NextResponse.json(project);
+    return NextResponse.json(serialize(project));
   } catch (error) {
     console.error('PATCH /api/projects/[id]:', error);
     return NextResponse.json({ error: 'Failed to update project' }, { status: 500 });

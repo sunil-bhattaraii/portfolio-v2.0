@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { dbConnect } from '@/lib/db';
 import { ProjectModel } from '@/models/Project';
-import { requireAdmin, serializeMany, invalidate } from '@/lib/api';
+import { requireAdmin, serialize, serializeMany, invalidate } from '@/lib/api';
 
 export const dynamic = 'force-dynamic';
 
@@ -41,7 +41,7 @@ export async function POST(req: NextRequest) {
       order: Number(body.order) || 0,
     });
     invalidate('projects');
-    return NextResponse.json(project, { status: 201 });
+    return NextResponse.json(serialize(project), { status: 201 });
   } catch (error) {
     console.error('POST /api/projects:', error);
     return NextResponse.json({ error: 'Failed to create project' }, { status: 500 });

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { dbConnect } from '@/lib/db';
 import { QualificationModel } from '@/models/Qualification';
-import { requireAdmin, invalidate } from '@/lib/api';
+import { requireAdmin, serialize, invalidate } from '@/lib/api';
 
 export const dynamic = 'force-dynamic';
 
@@ -31,7 +31,7 @@ export async function PATCH(req: NextRequest, { params }: Params) {
       return NextResponse.json({ error: 'Not found' }, { status: 404 });
     }
     invalidate('qualifications');
-    return NextResponse.json(qualification);
+    return NextResponse.json(serialize(qualification));
   } catch (error) {
     console.error('PATCH /api/qualifications/[id]:', error);
     return NextResponse.json({ error: 'Failed to update qualification' }, { status: 500 });
