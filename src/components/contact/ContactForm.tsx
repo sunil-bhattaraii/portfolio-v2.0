@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { Terminal, Send, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
+import { submitContact } from '@/lib/web3forms';
 
 const ContactForm: React.FC = () => {
   const [formState, setFormState] = useState({
@@ -15,19 +16,9 @@ const ContactForm: React.FC = () => {
     e.preventDefault();
     setStatus('loading');
 
-    const formData = new FormData();
-    formData.append('access_key', 'f1d24eb2-42ae-4016-86f6-26f0cd6228f0');
-    formData.append('name', formState.name);
-    formData.append('email', formState.email);
-    formData.append('message', formState.message);
-
     try {
-      const response = await fetch('https://api.web3forms.com/submit', {
-        method: 'POST',
-        body: formData
-      });
-      const data = await response.json();
-      if (data.success) {
+      const { ok } = await submitContact(formState);
+      if (ok) {
         setStatus('success');
         setFormState({ name: '', email: '', message: '' });
       } else {

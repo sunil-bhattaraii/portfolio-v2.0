@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ProjectCard from './ProjectCard';
 import ProjectModal from './ProjectModal';
 import type { Project } from '../../types';
@@ -11,6 +11,15 @@ interface ProjectsGridProps {
 
 const ProjectsGrid: React.FC<ProjectsGridProps> = ({ projects }) => {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+
+  useEffect(() => {
+    const handler = (event: Event) => {
+      const project = (event as CustomEvent<Project>).detail;
+      if (project) setSelectedProject(project);
+    };
+    window.addEventListener('open-project-modal', handler);
+    return () => window.removeEventListener('open-project-modal', handler);
+  }, []);
 
   return (
     <>

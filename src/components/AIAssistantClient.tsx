@@ -1,28 +1,73 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
-import { Bot, Send, X, Sparkles, Terminal } from 'lucide-react';
+import { Bot, Send, X, Sparkles, Terminal, Check } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
+import { submitContact } from '@/lib/web3forms';
 
 export type ChatMessage = { role: 'user' | 'ai'; text: string };
 
-interface AIAssistantClientProps {
-  onSendMessage: (
-    messages: ChatMessage[],
-    userMessage: string
-  ) => Promise<string>;
-}
+type OpenAIMessage = {
+  role: 'user' | 'assistant' | 'tool';
+  content: string | null;
+  tool_calls?: {
+    id: string;
+    type: 'function';
+    function: { name: string; arguments: string };
+  }[];
+  tool_call_id?: string;
+};
+
+type ToolActivity = {
+  key: string;
+  label: string;
+  status: 'running' | 'done' | 'error';
+};
 
 const SUGGESTIONS = [
+  'Show me your projects',
+  'Scroll to the skills section',
   'What is your tech stack?',
-  'Tell me about your projects.',
-  'How can you help my business?',
-  'Are you available for hire?',
+  'Send you an email',
 ];
 
-const AIAssistantClient: React.FC<AIAssistantClientProps> = ({
-  onSendMessage,
-}) => {
+const toolLabel = (name: string, args?: Record<string, unknown>) => {
+  switch (name) {
+    case 'scrollToSection':
+      return `Scrolled to ${String(args?.section ?? 'section')}`;
+    case 'openProject':
+      return 'Opened project';
+    case 'openExternalUrl':
+      return 'Opened link';
+    case 'getProjects':
+      return 'Fetched projects';
+    case 'getSkills':
+      return 'Fetched skills';
+    case 'getExperience':
+      return 'Fetched experience';
+    case 'getQualifications':
+      return 'Fetched qualifications';
+    case 'getSocials':
+      return 'Fetched socials';
+    case 'getSiteConfig':
+      return 'Fetched site info';
+    case 'sendEmail':
+      return 'Sent email';
+    default:
+      return 'Ran tool';
+  }
+};
+
+const safeParse = (raw: string): Record<string, unknown> => {
+  try {
+    const parsed = JSON.parse(raw);
+    return parsed && typeof parsed === 'object' ? parsed : {};
+  } catch {
+    return {};
+  }
+};
+
+const AIAssistantClient: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([
@@ -33,38 +78,258 @@ const AIAssistantClient: React.FC<AIAssistantClientProps> = ({
   ]);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [toolActivity, setToolActivity] = useState<ToolActivity[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const messagesRef = useRef<ChatMessage[]>(messages);
+  const historyRef = useRef<OpenAIMessage[]>([]);
+  const replyIndexRef = useRef<number | null>(null);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+  }, [messages, toolActivity]);
+
+  const applyMessages = (next: ChatMessage[]) => {
+    messagesRef.current = next;
+    setMessages(next);
+  };
+
+  const appendToReply = (delta: string) => {
+    const next = [...messagesRef.current];
+    if (replyIndexRef.current === null) {
+      next.push({ role: 'ai', text: delta });
+      replyIndexRef.current = next.length - 1;
+    } else {
+      const index = replyIndexRef.current;
+      next[index] = { role: 'ai', text: next[index].text + delta };
+    }
+    applyMessages(next);
+  };
+
+  const pushUserMessage = (text: string) => {
+    applyMessages([...messagesRef.current, { role: 'user', text }]);
+  };
+
+  const upsertToolActivity = (key: string, name?: string) => {
+    setToolActivity((prev) => {
+      const existing = prev.find((t) => t.key === key);
+      if (existing) {
+        if (name && existing.label === 'Ran tool') {
+          return prev.map((t) =>
+            t.key === key ? { ...t, label: toolLabel(name) } : t
+          );
+        }
+        return prev;
+      }
+      return [
+        ...prev,
+        { key, label: toolLabel(name ?? ''), status: 'running' as const },
+      ];
+    });
+  };
+
+  const setToolStatus = (key: string, status: ToolActivity['status']) => {
+    setToolActivity((prev) =>
+      prev.map((t) => (t.key === key ? { ...t, status } : t))
+    );
+  };
+
+  const fetchText = async (url: string) => {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`Failed to fetch ${url}`);
+    return res.text();
+  };
+
+  const executeTool = async (
+    name: string,
+    argsJson: string
+  ): Promise<string> => {
+    const args = safeParse(argsJson);
+
+    switch (name) {
+      case 'scrollToSection': {
+        const section = String(args.section ?? '');
+        const element = document.getElementById(section);
+        if (!element) throw new Error(`Unknown section: ${section}`);
+        element.scrollIntoView({ behavior: 'smooth' });
+        return `Scrolled to the ${section} section.`;
+      }
+      case 'openProject': {
+        const projects = (await fetch('/api/projects').then((r) =>
+          r.json()
+        )) as { id: string; title: string }[];
+        const match =
+          projects.find((p) => p.id === args.id) ??
+          projects.find(
+            (p) =>
+              p.title.toLowerCase() ===
+              String(args.title ?? '').toLowerCase()
+          );
+        if (!match) {
+          throw new Error('Project not found. Check the id/title from getProjects.');
+        }
+        document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' });
+        window.dispatchEvent(
+          new CustomEvent('open-project-modal', { detail: match })
+        );
+        return `Opened the "${match.title}" project details.`;
+      }
+      case 'openExternalUrl': {
+        const url = String(args.url ?? '');
+        if (!/^https?:\/\//i.test(url)) throw new Error('Only http(s) URLs allowed.');
+        window.open(url, '_blank', 'noopener,noreferrer');
+        return `Opened ${url} in a new tab.`;
+      }
+      case 'getProjects':
+        return fetchText('/api/projects');
+      case 'getSkills':
+        return fetchText('/api/skills');
+      case 'getExperience':
+        return fetchText('/api/experience');
+      case 'getQualifications':
+        return fetchText('/api/qualifications');
+      case 'getSocials':
+        return fetchText('/api/socials');
+      case 'getSiteConfig':
+        return fetchText('/api/site-config');
+      case 'sendEmail': {
+        const { ok, data } = await submitContact({
+          name: String(args.name ?? ''),
+          email: String(args.email ?? ''),
+          message: String(args.message ?? ''),
+        });
+        if (!ok) {
+          throw new Error(
+            typeof data?.message === 'string' && data.message
+              ? data.message
+              : 'Email failed to send.'
+          );
+        }
+        return 'Email sent successfully to Sunil.';
+      }
+      default:
+        throw new Error(`Unknown tool: ${name}`);
+    }
+  };
+
+  const runTurn = async (): Promise<boolean> => {
+    const res = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messages: historyRef.current }),
+    });
+    if (!res.ok || !res.body) {
+      throw new Error(`Chat request failed (${res.status}).`);
+    }
+
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = '';
+    let streamedText = '';
+    const toolCalls = new Map<number, { id: string; name: string; args: string }>();
+
+    try {
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop() ?? '';
+        for (const line of lines) {
+          if (!line.trim()) continue;
+          const msg = JSON.parse(line);
+          if (msg.type === 'text') {
+            streamedText += msg.d;
+            appendToReply(msg.d);
+          } else if (msg.type === 'tool') {
+            const key = msg.i ?? 0;
+            const acc = toolCalls.get(key) ?? { id: '', name: '', args: '' };
+            if (msg.id) acc.id = msg.id;
+            if (msg.name) acc.name = msg.name;
+            if (msg.a) acc.args += msg.a;
+            toolCalls.set(key, acc);
+            upsertToolActivity(acc.id || `tool-${key}`, acc.name);
+          } else if (msg.type === 'error') {
+            throw new Error(msg.message || 'Upstream chat error.');
+          }
+        }
+      }
+    } finally {
+      reader.releaseLock();
+    }
+
+    const calls = [...toolCalls.values()].filter((c) => c.name);
+
+    if (calls.length === 0) {
+      historyRef.current.push({ role: 'assistant', content: streamedText });
+      return true;
+    }
+
+    historyRef.current.push({
+      role: 'assistant',
+      content: streamedText || null,
+      tool_calls: calls.map((c) => ({
+        id: c.id,
+        type: 'function' as const,
+        function: { name: c.name, arguments: c.args || '{}' },
+      })),
+    });
+
+    for (const call of calls) {
+      const activityKey = call.id || `tool-${toolCalls.size}`;
+      setToolStatus(activityKey, 'running');
+      let result: string;
+      try {
+        result = await executeTool(call.name, call.args);
+        setToolStatus(activityKey, 'done');
+      } catch (error) {
+        result = `Error: ${error instanceof Error ? error.message : 'Tool failed.'}`;
+        setToolStatus(activityKey, 'error');
+      }
+      historyRef.current.push({
+        role: 'tool',
+        tool_call_id: call.id,
+        content: result,
+      });
+    }
+
+    return false;
+  };
 
   const handleSendMessage = async (text: string = inputValue) => {
-    if (!text.trim() || isLoading) return;
+    const trimmed = text.trim();
+    if (!trimmed || isLoading) return;
 
-    const userMessage = text.trim();
-    const messageHistory = [...messages];
-
-    setMessages((prev) => [...prev, { role: 'user', text: userMessage }]);
+    replyIndexRef.current = null;
+    setToolActivity([]);
+    pushUserMessage(trimmed);
+    historyRef.current.push({ role: 'user', content: trimmed });
     setInputValue('');
     setIsLoading(true);
 
     try {
-      const aiResponse = await onSendMessage(messageHistory, userMessage);
-      setMessages((prev) => [...prev, { role: 'ai', text: aiResponse }]);
+      let finished = false;
+      while (!finished) {
+        finished = await runTurn();
+      }
     } catch (error) {
       console.error('AI Error:', error);
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: 'ai',
-          text: 'Connection error. Please check your network protocol.',
-        },
-      ]);
+      const message =
+        error instanceof Error ? error.message : 'Connection error.';
+      if (replyIndexRef.current !== null) {
+        appendToReply(`\n\n**Error:** ${message}`);
+      } else {
+        applyMessages([
+          ...messagesRef.current,
+          { role: 'ai', text: `Connection error: ${message}` },
+        ]);
+      }
     } finally {
       setIsLoading(false);
     }
   };
+
+  const showThinking = isLoading && replyIndexRef.current === null;
 
   return (
     <div className="fixed bottom-8 right-8 z-1100 flex flex-col items-end">
@@ -123,58 +388,83 @@ const AIAssistantClient: React.FC<AIAssistantClientProps> = ({
           </div>
 
           <div className="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar bg-zinc-950/20">
-            {messages.map((msg, i) => (
-              <div
-                key={i}
-                className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
-              >
+            {messages.map((msg, i) => {
+              const isLastReply =
+                msg.role === 'ai' && i === messages.length - 1;
+              return (
                 <div
-                  className={`max-w-[85%] p-4 rounded-2xl text-sm leading-relaxed ${
-                    msg.role === 'user'
-                      ? 'bg-sky-600 text-white rounded-tr-none shadow-lg'
-                      : 'bg-zinc-900/80 border border-white/5 text-zinc-300 rounded-tl-none shadow-md'
-                  }`}
+                  key={i}
+                  className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
                 >
-                  {msg.role === 'ai' ? (
-                    <div className="markdown-content prose prose-invert prose-sm max-w-none">
-                      <ReactMarkdown
-                        components={{
-                          p: ({ node: _node, ...props }) => (
-                            <p className="mb-2 last:mb-0" {...props} />
-                          ),
-                          strong: ({ node: _node, ...props }) => (
-                            <strong
-                              className="font-bold text-sky-400"
-                              {...props}
-                            />
-                          ),
-                          ul: ({ node: _node, ...props }) => (
-                            <ul className="list-disc ml-4 mb-2" {...props} />
-                          ),
-                          ol: ({ node: _node, ...props }) => (
-                            <ol className="list-decimal ml-4 mb-2" {...props} />
-                          ),
-                          li: ({ node: _node, ...props }) => (
-                            <li className="mb-1" {...props} />
-                          ),
-                          code: ({ node: _node, ...props }) => (
-                            <code
-                              className="bg-zinc-800/80 px-1.5 py-0.5 rounded text-[11px] font-mono text-sky-300 border border-white/5"
-                              {...props}
-                            />
-                          ),
-                        }}
-                      >
-                        {msg.text}
-                      </ReactMarkdown>
-                    </div>
-                  ) : (
-                    msg.text
-                  )}
+                  <div
+                    className={`max-w-[85%] p-4 rounded-2xl text-sm leading-relaxed ${
+                      msg.role === 'user'
+                        ? 'bg-sky-600 text-white rounded-tr-none shadow-lg'
+                        : 'bg-zinc-900/80 border border-white/5 text-zinc-300 rounded-tl-none shadow-md'
+                    }`}
+                  >
+                    {msg.role === 'ai' ? (
+                      <div className="markdown-content prose prose-invert prose-sm max-w-none">
+                        <ReactMarkdown
+                          components={{
+                            p: ({ node: _node, ...props }) => (
+                              <p className="mb-2 last:mb-0" {...props} />
+                            ),
+                            strong: ({ node: _node, ...props }) => (
+                              <strong
+                                className="font-bold text-sky-400"
+                                {...props}
+                              />
+                            ),
+                            ul: ({ node: _node, ...props }) => (
+                              <ul className="list-disc ml-4 mb-2" {...props} />
+                            ),
+                            ol: ({ node: _node, ...props }) => (
+                              <ol className="list-decimal ml-4 mb-2" {...props} />
+                            ),
+                            li: ({ node: _node, ...props }) => (
+                              <li className="mb-1" {...props} />
+                            ),
+                            code: ({ node: _node, ...props }) => (
+                              <code
+                                className="bg-zinc-800/80 px-1.5 py-0.5 rounded text-[11px] font-mono text-sky-300 border border-white/5"
+                                {...props}
+                              />
+                            ),
+                          }}
+                        >
+                          {msg.text}
+                        </ReactMarkdown>
+                      </div>
+                    ) : (
+                      msg.text
+                    )}
+
+                    {isLastReply && toolActivity.length > 0 && (
+                      <div className="mt-3 space-y-1.5">
+                        {toolActivity.map((tool) => (
+                          <span
+                            key={tool.key}
+                            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-sky-500/10 border border-sky-500/30 text-[10px] font-bold uppercase tracking-wider text-sky-400"
+                          >
+                            {tool.status === 'running' ? (
+                              <span className="w-1.5 h-1.5 rounded-full bg-sky-500 animate-pulse"></span>
+                            ) : tool.status === 'done' ? (
+                              <Check size={10} />
+                            ) : (
+                              <span className="w-1.5 h-1.5 rounded-full bg-red-500"></span>
+                            )}
+                            {tool.label}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
-            {isLoading && (
+              );
+            })}
+
+            {showThinking && (
               <div className="flex justify-start">
                 <div className="bg-zinc-900 border border-white/5 p-4 rounded-2xl rounded-tl-none flex gap-1">
                   <span className="w-1.5 h-1.5 bg-sky-500 rounded-full animate-bounce"></span>
