@@ -348,7 +348,68 @@ const AIAssistantClient: React.FC = () => {
       }
       case 'openExternalUrl': {
         const url = String(args.url ?? '');
-        if (!/^https?:\/\//i.test(url)) throw new Error('Only http(s) URLs allowed.');
+        if (!/^https?:\/\//i.test(url)) {
+          throw new Error('Only http(s) URLs allowed.');
+        }
+
+        const [projects, socials] = await Promise.all([
+          fetch('/api/projects').then((r) => r.json()).catch(() => []),
+          fetch('/api/socials').then((r) => r.json()).catch(() => []),
+        ]);
+        const projectList = Array.isArray(projects)
+          ? projects
+          : Array.isArray((projects as { projects?: unknown }).projects)
+            ? (projects as { projects: Record<string, unknown>[] }).projects
+            : [];
+        const socialList = Array.isArray(socials) ? socials : [];
+
+        const realUrls: string[] = [];
+        for (const p of projectList as Record<string, unknown>[]) {
+          if (typeof p.liveUrl === 'string' && p.liveUrl) realUrls.push(p.liveUrl);
+          if (typeof p.githubUrl === 'string' && p.githubUrl) realUrls.push(p.githubUrl);
+        }
+        for (const s of socialList as Record<string, unknown>[]) {
+          if (typeof s.href === 'string' && s.href) realUrls.push(s.href);
+        }
+
+        const normalize = (raw: string) => {
+          try {
+            const parsed = new URL(raw);
+            return {
+              origin: parsed.origin.toLowerCase(),
+              pathname: parsed.pathname.toLowerCase().replace(/\/+$/, ''),
+            };
+          } catch {
+            return null;
+          }
+        };
+
+        const wanted = normalize(url);
+        const isReal = realUrls.some((real) => {
+          const rn = normalize(real);
+          return (
+            rn !== null &&
+            wanted !== null &&
+            rn.origin === wanted.origin &&
+            rn.pathname === wanted.pathname
+          );
+        });
+        if (!isReal) {
+          const candidates = realUrls.filter((real) => {
+            const rn = normalize(real);
+            return rn !== null && wanted !== null && rn.origin === wanted.origin;
+          });
+          const hint =
+            candidates.length > 0
+              ? ` The real links from that site are: ${[...new Set(candidates)]
+                  .slice(0, 5)
+                  .join(', ')}.`
+              : '';
+          throw new Error(
+            `That link isn't a real portfolio link, so I didn't open it. I can only open real links from Sunil's portfolio — a project's live site or repository, or a social profile.${hint}`
+          );
+        }
+
         window.open(url, '_blank', 'noopener,noreferrer');
         return `Opened ${url} in a new tab.`;
       }
@@ -499,6 +560,16 @@ const AIAssistantClient: React.FC = () => {
         tool_call_id: call.id,
         content: result,
       });
+    }
+
+    const allOpenExternal = calls.every((c) => c.name === 'openExternalUrl');
+    if (allOpenExternal && results.every((r) => r.startsWith('Error:'))) {
+      const replyText = results
+        .map((r) => r.replace(/^Error:\s*/, ''))
+        .join('\n\n');
+      if (streamedText) appendToReply(`\n\n${replyText}`);
+      else appendToReply(replyText);
+      return true;
     }
 
     if (

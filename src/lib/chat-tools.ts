@@ -57,8 +57,8 @@ export const CHAT_TOOLS = [
   ),
   functionTool(
     'openExternalUrl',
-    'Opens an external URL in a new browser tab, e.g. a social profile, GitHub repository, or live project demo. Only allow http:// and https:// URLs.',
-    { url: { type: 'string', description: 'The http(s) URL to open' } },
+    'Opens an external URL in a new browser tab (a social profile, GitHub repository, or live project demo). ONLY works with real URLs from the portfolio data: a project\'s liveUrl or githubUrl (from getProjects), or a social href (from getSocials). NEVER invent, guess, or reconstruct a URL — fetch the data first and pass the exact URL returned. http(s) only.',
+    { url: { type: 'string', description: 'The exact http(s) URL from getProjects or getSocials' } },
     ['url']
   ),
   functionTool(
