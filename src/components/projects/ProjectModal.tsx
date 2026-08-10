@@ -4,6 +4,7 @@ import React, { useEffect } from 'react';
 import { X, Github, ExternalLink, ArrowLeft } from 'lucide-react';
 import { Project } from '../../types';
 import Image from 'next/image';
+import MarkdownContent from '../MarkdownContent';
 
 interface ProjectModalProps {
   project: Project;
@@ -11,6 +12,7 @@ interface ProjectModalProps {
 }
 
 const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) => {
+  const showPreview = project.showPreview !== false;
   useEffect(() => {
     document.body.style.overflow = 'hidden';
     return () => {
@@ -52,7 +54,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 flex-1 md:flex-none">
           <div className="h-[55vw] md:h-auto md:aspect-auto md:min-h-100 relative overflow-hidden">
-            {project.liveUrl ? (
+            {showPreview && project.liveUrl ? (
               <iframe
                 src={project.liveUrl}
                 title={project.title}
@@ -112,9 +114,10 @@ const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) => {
             <h3 className="text-xs font-bold text-white uppercase tracking-widest mb-2">
               Project Details
             </h3>
-            <p className="text-zinc-400 whitespace-pre-wrap font-sans text-sm md:text-lg mb-6 md:mb-8 leading-snug md:max-h-[40vh] md:overflow-auto">
-              {project.fullDetails || project.description}
-            </p>
+            <MarkdownContent
+              content={project.fullDetails || project.description}
+              className="text-sm md:text-base max-h-[40vh] overflow-auto space-y-3 pr-2"
+            />
           </div>
         </div>
       </div>

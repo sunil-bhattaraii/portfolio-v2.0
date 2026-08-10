@@ -26,6 +26,7 @@ export async function PATCH(req: NextRequest, { params }: Params) {
         liveUrl: body.liveUrl ?? '',
         status: body.status || 'Completed',
         fullDetails: body.fullDetails ?? '',
+        showPreview: body.showPreview !== false,
         order: Number(body.order) || 0,
       },
       { new: true, runValidators: true }

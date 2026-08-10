@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { getLucideIcon } from '../../lib/icon-registry';
+import MarkdownContent from '../MarkdownContent';
 
 interface Fact {
   icon: string;
@@ -22,16 +23,9 @@ const AboutIntro: React.FC<AboutIntroProps> = ({ intro, facts }) => {
         <div className="p-2 lg:p-8 bg-zinc-900/30 border border-white/5 rounded-2xl space-y-4 relative overflow-hidden group hover:border-sky-500/20 transition-all duration-500">
           <div className="absolute -top-10 -left-10 w-32 h-32 bg-sky-500/5 blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
           {intro.map((paragraph, i) => (
-            <p
-              key={i}
-              className={
-                i === 0
-                  ? 'text-zinc-300 text-base leading-relaxed'
-                  : 'text-zinc-400 text-sm leading-relaxed'
-              }
-            >
-              {paragraph}
-            </p>
+            <div key={i}>
+              <MarkdownContent content={paragraph} className="space-y-0" />
+            </div>
           ))}
         </div>
       )}

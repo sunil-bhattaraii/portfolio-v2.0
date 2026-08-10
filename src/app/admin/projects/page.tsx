@@ -19,7 +19,12 @@ const ProjectsAdminPage: React.FC = () => {
       badgeField={{ name: 'status', map: { Completed: 'Completed', Ongoing: 'Ongoing' } }}
       fields={[
         { name: 'title', label: 'Title', type: 'text', required: true },
-        { name: 'description', label: 'Description', type: 'textarea', required: true },
+        {
+          name: 'description',
+          label: 'Description',
+          type: 'markdown',
+          required: true,
+        },
         {
           name: 'techStack',
           label: 'Tech Stack',
@@ -31,10 +36,16 @@ const ProjectsAdminPage: React.FC = () => {
         { name: 'liveUrl', label: 'Live URL', type: 'url' },
         { name: 'status', label: 'Status', type: 'select', options: StatusOptions },
         {
+          name: 'showPreview',
+          label: 'Show live preview (iframe)',
+          type: 'boolean',
+          hint: 'If off, the cover image is shown instead. Some sites block embedding.',
+        },
+        {
           name: 'fullDetails',
           label: 'Full Details',
-          type: 'textarea',
-          hint: 'Shown inside the project modal.',
+          type: 'markdown',
+          hint: 'Shown on the project page.',
         },
         { name: 'order', label: 'Order', type: 'number' },
       ]}

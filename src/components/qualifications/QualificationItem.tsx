@@ -3,6 +3,7 @@
 import React from 'react';
 import { Calendar } from 'lucide-react';
 import { Qualification } from '../../types';
+import MarkdownContent from '../MarkdownContent';
 
 interface QualificationItemProps {
   q: Qualification;
@@ -22,8 +23,8 @@ const QualificationItem: React.FC<QualificationItemProps> = ({ q, index }) => (
     </h3>
     <p className="text-zinc-500 font-bold text-sm mb-6">{q.institute}</p>
     {q.details && (
-      <div className="p-6 bg-zinc-900/30 border border-white/5 rounded-lg text-sm text-zinc-500 leading-relaxed mono">
-        {q.details}
+      <div className="p-6 bg-zinc-900/30 border border-white/5 rounded-lg text-sm mono">
+        <MarkdownContent content={q.details} className="space-y-2" />
       </div>
     )}
   </div>

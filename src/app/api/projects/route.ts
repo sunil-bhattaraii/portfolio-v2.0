@@ -38,6 +38,7 @@ export async function POST(req: NextRequest) {
       liveUrl: body.liveUrl ?? '',
       status: body.status || 'Completed',
       fullDetails: body.fullDetails ?? '',
+      showPreview: body.showPreview !== false,
       order: Number(body.order) || 0,
     });
     invalidate('projects');

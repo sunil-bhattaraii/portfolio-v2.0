@@ -10,6 +10,7 @@ export interface ProjectDoc {
   liveUrl: string;
   status: Project['status'];
   fullDetails: string;
+  showPreview: boolean;
   order: number;
 }
 
@@ -26,6 +27,7 @@ const ProjectSchema = new Schema<ProjectDoc>({
     enum: ['Completed', 'Ongoing'],
   },
   fullDetails: { type: String, default: '' },
+  showPreview: { type: Boolean, default: true },
   order: { type: Number, default: 0 },
 });
 

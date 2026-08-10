@@ -43,6 +43,7 @@ export interface Project {
   liveUrl?: string;
   status: 'Completed' | 'Ongoing';
   fullDetails?: string;
+  showPreview?: boolean;
 }
 
 export interface Social {

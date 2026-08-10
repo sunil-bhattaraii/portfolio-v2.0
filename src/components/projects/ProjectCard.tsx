@@ -1,18 +1,18 @@
 import React from 'react';
+import Link from 'next/link';
 import { ArrowUpRight } from 'lucide-react';
 import { Project } from '../../types';
 import Image from 'next/image';
 
 interface ProjectCardProps {
   project: Project;
-  onClick: () => void;
 }
 
-const ProjectCard: React.FC<ProjectCardProps> = ({ project, onClick }) => {
+const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
   return (
-    <div
-      onClick={onClick}
-      className="group relative cursor-pointer overflow-hidden bg-zinc-900/50 border border-white/5 transition-all hover:bg-zinc-900"
+    <Link
+      href={`/projects/${project.id}`}
+      className="group relative cursor-pointer overflow-hidden bg-zinc-900/50 border border-white/5 transition-all hover:bg-zinc-900 block"
     >
       <div className="aspect-video w-full overflow-hidden lg:saturate-[0.4] lg:brightness-90 lg:opacity-75 group-hover:saturate-100 group-hover:brightness-100 group-hover:opacity-100 transition-all duration-700 relative">
         <Image
@@ -47,7 +47,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onClick }) => {
           {project.description}
         </p>
       </div>
-    </div>
+    </Link>
   );
 };
 

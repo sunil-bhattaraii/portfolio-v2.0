@@ -5,6 +5,7 @@ import { Plus, Pencil, Trash2, Loader2, X, Check } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Field, Input, Textarea, Select, Checkbox, Button, Card, PageHeader, cn } from './ui';
 import ImageUpload from './ImageUpload';
+import MarkdownField from './MarkdownField';
 
 export type FieldType =
   | 'text'
@@ -14,7 +15,8 @@ export type FieldType =
   | 'select'
   | 'boolean'
   | 'image'
-  | 'url';
+  | 'url'
+  | 'markdown';
 
 export interface FieldConfig {
   name: string;
@@ -192,6 +194,16 @@ const ResourceManager: React.FC<ResourceManagerProps> = ({
     const value = form[f.name];
 
     switch (f.type) {
+      case 'markdown':
+        return (
+          <MarkdownField
+            label={f.label}
+            value={valueToString(value)}
+            onChange={(v) => setField(f.name, v)}
+            placeholder={f.placeholder}
+            hint={f.hint ?? 'Markdown supported (## headings, **bold**, - lists, etc.)'}
+          />
+        );
       case 'textarea':
         return (
           <Field label={f.label} hint={f.hint}>
@@ -326,7 +338,8 @@ const ResourceManager: React.FC<ResourceManagerProps> = ({
                   'space-y-2',
                   (f.type === 'textarea' ||
                     f.type === 'array' ||
-                    f.type === 'image') &&
+                    f.type === 'image' ||
+                    f.type === 'markdown') &&
                     'md:col-span-2'
                 )}
               >

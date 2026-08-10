@@ -88,6 +88,18 @@ export async function getProjects(): Promise<Project[]> {
   }
 }
 
+/** Reads a single project by its Mongo id. */
+export async function getProjectById(id: string): Promise<Nullable<Project>> {
+  try {
+    await dbConnect();
+    const doc = await ProjectModel.findById(id).lean();
+    return doc ? (serialize(doc) as Project) : null;
+  } catch (error) {
+    console.error('getProjectById failed:', error);
+    return null;
+  }
+}
+
 /** Reads experiences, sorted by order then createdAt. */
 export async function getExperience(): Promise<Experience[]> {
   try {

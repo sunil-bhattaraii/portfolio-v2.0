@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { Briefcase, CheckCircle2 } from 'lucide-react';
+import MarkdownContent from '../MarkdownContent';
 
 interface ExperienceDetailsProps {
   role: string;
@@ -22,7 +23,7 @@ const ExperienceDetails: React.FC<ExperienceDetailsProps> = ({ role, description
         {description.map((item, i) => (
           <li key={i} className="flex items-start gap-4 text-zinc-400 text-base leading-relaxed group-hover:text-zinc-300 transition-colors">
             <CheckCircle2 size={16} className="text-sky-500/50 mt-1 shrink-0 group-hover:text-sky-500 transition-colors" />
-            <span>{item}</span>
+            <MarkdownContent content={item} />
           </li>
         ))}
       </ul>

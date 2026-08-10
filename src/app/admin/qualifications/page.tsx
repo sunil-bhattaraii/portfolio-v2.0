@@ -27,7 +27,7 @@ const QualificationsAdminPage: React.FC = () => {
           type: 'select',
           options: TypeOptions,
         },
-        { name: 'details', label: 'Details', type: 'textarea' },
+        { name: 'details', label: 'Details', type: 'markdown' },
         { name: 'order', label: 'Order', type: 'number' },
       ]}
     />
