@@ -1,16 +1,10 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Bot, Send, X, Sparkles, Terminal, Check } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { submitContact } from '@/lib/web3forms';
-import {
-  getProjectModalState,
-  openProjectModal,
-  closeProjectModal,
-  PROJECT_MODAL_STATE_EVENT,
-} from '@/lib/project-modal';
-import type { ProjectModalState } from '@/lib/project-modal';
 import type { Project } from '@/types';
 
 export type ChatMessage = { role: 'user' | 'ai'; text: string };
@@ -37,7 +31,6 @@ type Notice = { id: number; text: string };
 const INTERACTIVE_TOOLS = new Set([
   'scrollToSection',
   'openProject',
-  'closeProjectModal',
   'openExternalUrl',
   'sendEmail',
 ]);
@@ -135,9 +128,7 @@ const toolLabel = (name: string, args?: Record<string, unknown>) => {
     case 'scrollToSection':
       return `Scrolled to ${String(args?.section ?? 'section')}`;
     case 'openProject':
-      return 'Opened project';
-    case 'closeProjectModal':
-      return 'Closed project modal';
+      return 'Opened project page';
     case 'openExternalUrl':
       return 'Opened link';
     case 'getProjects':
@@ -184,20 +175,11 @@ const AIAssistantClient: React.FC = () => {
   const messagesRef = useRef<ChatMessage[]>(messages);
   const historyRef = useRef<OpenAIMessage[]>([]);
   const replyIndexRef = useRef<number | null>(null);
-  const modalStateRef = useRef<ProjectModalState>(getProjectModalState());
   const interactiveRanRef = useRef(false);
   const actionSummariesRef = useRef<string[]>([]);
   const noticeIdRef = useRef(0);
   const noticeTimersRef = useRef<number[]>([]);
-
-  useEffect(() => {
-    const onModalState = (event: Event) => {
-      modalStateRef.current = (event as CustomEvent<ProjectModalState>).detail;
-    };
-    window.addEventListener(PROJECT_MODAL_STATE_EVENT, onModalState);
-    return () =>
-      window.removeEventListener(PROJECT_MODAL_STATE_EVENT, onModalState);
-  }, []);
+  const router = useRouter();
 
   useEffect(() => {
     const timers = noticeTimersRef.current;
@@ -242,12 +224,12 @@ const AIAssistantClient: React.FC = () => {
   };
 
   const buildUiStateContext = () => {
-    const state = modalStateRef.current;
-    if (state.open && state.project) {
-      return `A project details modal is currently open for "${state.project.title}". To show a different project, close it first with closeProjectModal.`;
+    const path =
+      typeof window !== 'undefined' ? window.location.pathname : '/';
+    if (path.startsWith('/projects/')) {
+      return `The visitor is currently on a single project page (/projects/{id}). To show a different project, call getProjects first, then openProject with the exact id or title of the requested project. Use scrollToSection to go back to the home sections.`;
     }
-    if (state.open) return 'A project details modal is currently open.';
-    return 'No project modal is currently open.';
+    return `The visitor is on the home page (${path}).`;
   };
 
   const applyMessages = (next: ChatMessage[]) => {
@@ -320,9 +302,15 @@ const AIAssistantClient: React.FC = () => {
       case 'scrollToSection': {
         const section = String(args.section ?? '');
         const element = document.getElementById(section);
-        if (!element) throw new Error(`Unknown section: ${section}`);
-        element.scrollIntoView({ behavior: 'smooth' });
-        return `Scrolled to the ${section} section.`;
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+          return `Scrolled to the ${section} section.`;
+        }
+        router.push(`/#${section}`);
+        window.setTimeout(() => {
+          document.getElementById(section)?.scrollIntoView({ behavior: 'smooth' });
+        }, 500);
+        return `Navigated to the ${section} section on the home page.`;
       }
       case 'openProject': {
         const projects = (await fetch('/api/projects').then((r) =>
@@ -338,16 +326,8 @@ const AIAssistantClient: React.FC = () => {
         if (!match) {
           throw new Error('Project not found. Check the id/title from getProjects.');
         }
-        document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' });
-        openProjectModal(match);
-        return `Opened the "${match.title}" project details modal.`;
-      }
-      case 'closeProjectModal': {
-        if (!getProjectModalState().open) {
-          return 'There was no project modal open.';
-        }
-        closeProjectModal();
-        return 'Closed the project details modal.';
+        router.push(`/projects/${match.id}`);
+        return `Navigated to the "${match.title}" project page.`;
       }
       case 'openExternalUrl': {
         const url = String(args.url ?? '');

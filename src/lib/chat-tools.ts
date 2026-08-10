@@ -1,7 +1,6 @@
 export type ToolName =
   | 'scrollToSection'
   | 'openProject'
-  | 'closeProjectModal'
   | 'openExternalUrl'
   | 'getProjects'
   | 'getSkills'
@@ -50,16 +49,11 @@ export const CHAT_TOOLS = [
   ),
   functionTool(
     'openProject',
-    'Opens a specific project details modal in the Projects section (scrolls there and opens the card). If a project modal is already open, close it first with closeProjectModal. Call getProjects first to find the exact project id or title.',
+    'Navigates the visitor to the dedicated page for ONE single project at /projects/{id} (live preview, tech stack, status, Live Site / Repository buttons, full details). Use this ONLY when the visitor names or asks to open a specific project, e.g. "show me the chess trainer project". For an overview such as "show me your projects", use scrollToSection("projects") instead — NEVER call openProject repeatedly to walk through the whole project list. Call getProjects first to find the exact id or title.',
     {
       id: { type: 'string', description: 'The project id from getProjects' },
       title: { type: 'string', description: 'The exact project title from getProjects' },
     }
-  ),
-  functionTool(
-    'closeProjectModal',
-    'Closes the currently open project details modal, if any. Use it when the visitor asks to close the modal or before opening a different project.',
-    {}
   ),
   functionTool(
     'openExternalUrl',
