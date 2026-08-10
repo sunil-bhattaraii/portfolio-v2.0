@@ -1,7 +1,7 @@
 import OpenAI from 'openai';
 import { NextRequest } from 'next/server';
 import { CHAT_TOOLS } from '@/lib/chat-tools';
-import { getAIInstruction } from '@/lib/queries';
+import { getAIInstruction, getAIModel } from '@/lib/queries';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -10,8 +10,6 @@ const openai = new OpenAI({
   apiKey: process.env.NVIDIA_NIM_API_KEY,
   baseURL: process.env.NIM_BASE_URL || 'https://integrate.api.nvidia.com/v1',
 });
-
-const DEFAULT_MODEL = 'meta/llama-3.1-8b-instruct';
 
 /**
  * Stateless streaming chat proxy. The client owns the agentic loop and sends
@@ -65,10 +63,13 @@ export async function POST(req: NextRequest) {
       };
 
       try {
-        const instruction = await getAIInstruction();
+        const [instruction, model] = await Promise.all([
+          getAIInstruction(),
+          getAIModel(),
+        ]);
         const stream = await openai.chat.completions.create(
           {
-            model: process.env.NIM_MODEL || DEFAULT_MODEL,
+            model,
             stream: true,
             messages: [
               {

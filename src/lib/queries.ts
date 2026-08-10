@@ -9,6 +9,7 @@ import { SiteConfigModel } from '@/models/SiteConfig';
 import { AIConfigModel } from '@/models/AIConfig';
 import { AllowlistModel } from '@/models/Allowlist';
 import { DEFAULT_AI_INSTRUCTION } from './ai-instruction';
+import { DEFAULT_AI_MODEL } from './ai-models';
 import type { Skill, Project, Experience, Qualification, Social, SiteConfigData } from '@/types';
 
 type Nullable<T> = T | null;
@@ -29,6 +30,24 @@ export async function getAIStoredInstruction(): Promise<string> {
 export async function getAIInstruction(): Promise<string> {
   const stored = await getAIStoredInstruction();
   return stored || DEFAULT_AI_INSTRUCTION;
+}
+
+/** The AI model id saved by the admin (may be empty = use env/default). */
+export async function getAIStoredModel(): Promise<string> {
+  try {
+    await dbConnect();
+    const doc = await AIConfigModel.findOne({ key: 'ai' }).lean();
+    return doc?.model?.trim() ?? '';
+  } catch (error) {
+    console.error('getAIStoredModel failed:', error);
+    return '';
+  }
+}
+
+/** The effective AI model: saved value, else env var, else the default. */
+export async function getAIModel(): Promise<string> {
+  const stored = await getAIStoredModel();
+  return stored || process.env.NIM_MODEL || DEFAULT_AI_MODEL;
 }
 
 export async function getAllowlist(): Promise<
