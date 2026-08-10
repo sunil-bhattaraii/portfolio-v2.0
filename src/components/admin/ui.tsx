@@ -1,4 +1,5 @@
 import React from 'react';
+import { Loader2 } from 'lucide-react';
 
 export function cn(...classes: (string | false | null | undefined)[]) {
   return classes.filter(Boolean).join(' ');
@@ -73,10 +74,16 @@ export function Checkbox({
 
 export function Button({
   variant = 'primary',
+  icon,
+  label,
+  loading = false,
   className,
   ...props
 }: React.ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?: 'primary' | 'secondary' | 'danger' | 'ghost';
+  icon?: React.ReactNode;
+  label?: string;
+  loading?: boolean;
 }) {
   const styles = {
     primary:
@@ -88,13 +95,23 @@ export function Button({
   };
   return (
     <button
+      aria-label={label && icon ? label : undefined}
       {...props}
       className={cn(
-        'px-4 py-2 rounded-lg text-sm font-bold transition-all active:scale-[0.98] disabled:opacity-60',
+        'inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg text-sm font-bold transition-all active:scale-[0.98] disabled:opacity-60',
         styles[variant],
         className
       )}
-    />
+    >
+      {loading ? (
+        <Loader2 size={16} className="animate-spin shrink-0" />
+      ) : (
+        icon
+      )}
+      {label && (
+        <span className={cn(Boolean(icon) && 'hidden sm:inline')}>{label}</span>
+      )}
+    </button>
   );
 }
 

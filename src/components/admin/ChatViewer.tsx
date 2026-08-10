@@ -261,14 +261,14 @@ const ChatViewer: React.FC = () => {
               <option value="conv">By Conversation (person)</option>
               <option value="ip">By IP only</option>
             </Select>
-            <Button variant="secondary" onClick={load} disabled={loading}>
-              {loading ? (
-                <Loader2 size={14} className="animate-spin mr-1.5 inline" />
-              ) : (
-                <RefreshCw size={14} className="mr-1.5 inline" />
-              )}
-              Refresh
-            </Button>
+            <Button
+              variant="secondary"
+              onClick={load}
+              disabled={loading}
+              loading={loading}
+              icon={<RefreshCw size={14} />}
+              label="Refresh"
+            />
           </div>
         }
       />

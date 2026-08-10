@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Loader2, Save, RotateCcw, Eraser, Sparkles } from 'lucide-react';
+import { Save, RotateCcw, Eraser, Sparkles } from 'lucide-react';
 import {
   Card,
   PageHeader,
@@ -160,14 +160,13 @@ const AIConfigForm: React.FC<AIConfigFormProps> = ({
         </Field>
 
         <div className="flex flex-wrap gap-3 mt-6">
-          <Button onClick={() => save(value)} disabled={saving}>
-            {saving ? (
-              <Loader2 size={16} className="animate-spin mr-1.5 inline" />
-            ) : (
-              <Save size={16} className="mr-1.5 inline" />
-            )}
-            Save
-          </Button>
+          <Button
+            onClick={() => save(value)}
+            disabled={saving}
+            loading={saving}
+            icon={<Save size={16} />}
+            label="Save"
+          />
 
           <Button
             variant="secondary"
@@ -176,10 +175,9 @@ const AIConfigForm: React.FC<AIConfigFormProps> = ({
               setValue(defaultInstruction);
               setMessage(null);
             }}
-          >
-            <RotateCcw size={16} className="mr-1.5 inline" />
-            Load Default Instruction
-          </Button>
+            icon={<RotateCcw size={16} />}
+            label="Load Default Instruction"
+          />
 
           <Button
             variant="ghost"
@@ -188,10 +186,9 @@ const AIConfigForm: React.FC<AIConfigFormProps> = ({
               setValue('');
               setMessage(null);
             }}
-          >
-            <Eraser size={16} className="mr-1.5 inline" />
-            Clear Instruction (use default)
-          </Button>
+            icon={<Eraser size={16} />}
+            label="Clear Instruction (use default)"
+          />
 
           <Button
             variant="ghost"
@@ -200,10 +197,9 @@ const AIConfigForm: React.FC<AIConfigFormProps> = ({
               resetModel();
               setMessage(null);
             }}
-          >
-            <RotateCcw size={16} className="mr-1.5 inline" />
-            Reset Model
-          </Button>
+            icon={<RotateCcw size={16} />}
+            label="Reset Model"
+          />
         </div>
       </Card>
     </div>

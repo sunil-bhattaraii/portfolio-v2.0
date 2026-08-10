@@ -77,16 +77,15 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ label, value, onChange, hint 
                   type="button"
                   variant="secondary"
                   onClick={() => inputRef.current?.click()}
-                >
-                  Replace
-                </Button>
+                  label="Replace"
+                />
                 <Button
                   type="button"
                   variant="danger"
                   onClick={() => onChange('')}
-                >
-                  <Trash2 size={14} />
-                </Button>
+                  aria-label="Remove image"
+                  icon={<Trash2 size={14} />}
+                />
               </div>
             </div>
           ) : (

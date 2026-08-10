@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Plus, Trash2, Loader2, Check } from 'lucide-react';
+import { Plus, Trash2, Check } from 'lucide-react';
 import { Field, Input, Textarea, Select, Button, Card, PageHeader } from './ui';
 import { ICON_NAMES } from '@/lib/icon-registry';
 import type { SiteConfigData } from '@/types';
@@ -157,9 +157,9 @@ const SiteConfigForm: React.FC<SiteConfigFormProps> = ({ config }) => {
                       },
                     }))
                   }
-                >
-                  <Plus size={14} className="mr-1 inline" /> Add fact
-                </Button>
+                  icon={<Plus size={14} />}
+                  label="Add fact"
+                />
               </div>
               <div className="space-y-3">
                 {form.about.facts.length === 0 && (
@@ -203,9 +203,8 @@ const SiteConfigForm: React.FC<SiteConfigFormProps> = ({ config }) => {
                         }))
                       }
                       aria-label="Remove fact"
-                    >
-                      <Trash2 size={16} className="text-red-400" />
-                    </Button>
+                      icon={<Trash2 size={16} className="text-red-400" />}
+                    />
                   </div>
                 ))}
               </div>
@@ -228,9 +227,9 @@ const SiteConfigForm: React.FC<SiteConfigFormProps> = ({ config }) => {
                       },
                     }))
                   }
-                >
-                  <Plus size={14} className="mr-1 inline" /> Add hobby
-                </Button>
+                  icon={<Plus size={14} />}
+                  label="Add hobby"
+                />
               </div>
               <div className="space-y-3">
                 {form.about.hobbies.length === 0 && (
@@ -268,9 +267,8 @@ const SiteConfigForm: React.FC<SiteConfigFormProps> = ({ config }) => {
                         }))
                       }
                       aria-label="Remove hobby"
-                    >
-                      <Trash2 size={16} className="text-red-400" />
-                    </Button>
+                      icon={<Trash2 size={16} className="text-red-400" />}
+                    />
                   </div>
                 ))}
               </div>
@@ -317,14 +315,13 @@ const SiteConfigForm: React.FC<SiteConfigFormProps> = ({ config }) => {
         </Card>
 
         <div className="flex gap-3">
-          <Button onClick={save} disabled={saving}>
-            {saving ? (
-              <Loader2 size={16} className="animate-spin mr-1.5 inline" />
-            ) : (
-              <Check size={16} className="mr-1.5 inline" />
-            )}
-            Save Changes
-          </Button>
+          <Button
+            onClick={save}
+            disabled={saving}
+            loading={saving}
+            icon={<Check size={16} />}
+            label="Save Changes"
+          />
         </div>
       </div>
     </div>

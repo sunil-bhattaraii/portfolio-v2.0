@@ -303,9 +303,7 @@ const ResourceManager: React.FC<ResourceManagerProps> = ({
         subtitle={subtitle}
         action={
           !formOpen && (
-            <Button onClick={openNew}>
-              <Plus size={16} className="mr-1.5 inline" /> New
-            </Button>
+            <Button onClick={openNew} icon={<Plus size={16} />} label="New" />
           )
         }
       />
@@ -348,14 +346,13 @@ const ResourceManager: React.FC<ResourceManagerProps> = ({
             ))}
           </div>
           <div className="mt-8 flex gap-3">
-            <Button onClick={save} disabled={saving}>
-              {saving ? (
-                <Loader2 size={16} className="animate-spin mr-1.5 inline" />
-              ) : (
-                <Check size={16} className="mr-1.5 inline" />
-              )}
-              {editingId ? 'Save Changes' : 'Create'}
-            </Button>
+            <Button
+              onClick={save}
+              disabled={saving}
+              loading={saving}
+              icon={<Check size={16} />}
+              label={editingId ? 'Save Changes' : 'Create'}
+            />
             <Button variant="secondary" onClick={() => setFormOpen(false)}>
               Cancel
             </Button>
@@ -413,21 +410,20 @@ const ResourceManager: React.FC<ResourceManagerProps> = ({
                     )}
                   </div>
                   <div className="flex gap-2 shrink-0">
-                    <Button variant="secondary" onClick={() => openEdit(item)}>
-                      <Pencil size={14} className="mr-1 inline" /> Edit
-                    </Button>
+                    <Button
+                      variant="secondary"
+                      onClick={() => openEdit(item)}
+                      icon={<Pencil size={14} />}
+                      label="Edit"
+                    />
                     <Button
                       variant="danger"
                       onClick={() => remove(item)}
                       disabled={deletingId === id}
-                    >
-                      {deletingId === id ? (
-                        <Loader2 size={14} className="animate-spin" />
-                      ) : (
-                        <Trash2 size={14} className="mr-1 inline" />
-                      )}
-                      Delete
-                    </Button>
+                      loading={deletingId === id}
+                      icon={<Trash2 size={14} />}
+                      label="Delete"
+                    />
                   </div>
                 </li>
               );
