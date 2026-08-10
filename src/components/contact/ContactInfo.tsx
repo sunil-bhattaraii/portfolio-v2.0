@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { Mail, Phone, MapPin } from 'lucide-react';
+import Link from 'next/link';
 
 interface ContactContent {
   email: string;
@@ -46,9 +47,9 @@ const ContactInfo: React.FC<ContactInfoProps> = ({ contact }) => {
           <div>
             <p className="text-[10px] text-zinc-600 uppercase font-bold tracking-widest mb-1">{method.label}</p>
             {method.href ? (
-              <a href={method.href} className="text-xl font-bold text-white hover:text-sky-500 transition-colors tracking-tight">
+              <Link href={method.href} target='_blank' className="text-xl font-bold text-white hover:text-sky-500 transition-colors tracking-tight">
                 {method.value}
-              </a>
+              </Link>
             ) : (
               <p className="text-xl font-bold text-white tracking-tight">{method.value}</p>
             )}
