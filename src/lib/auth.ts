@@ -94,8 +94,17 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
       return isEmailAllowed(email);
     },
-    async jwt({ token, user }) {
-      if (user?.email) token.email = user.email;
+    async jwt({ token, user, account, profile }) {
+      // On first sign-in only: resolve the email the same way `signIn` does,
+      // including the GitHub API fallback for hidden profile emails, so the
+      // resolved address always lands in the session/token.
+      if (user) {
+        let email: string | null = user.email ?? profile?.email ?? null;
+        if (!email && account?.access_token) {
+          email = await getGitHubEmail(account.access_token);
+        }
+        if (email) token.email = email;
+      }
       return token;
     },
     async session({ session, token }) {
