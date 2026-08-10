@@ -1,6 +1,7 @@
 export type ToolName =
   | 'scrollToSection'
   | 'openProject'
+  | 'closeProjectModal'
   | 'openExternalUrl'
   | 'getProjects'
   | 'getSkills'
@@ -41,19 +42,24 @@ const functionTool = (
 export const CHAT_TOOLS = [
   functionTool(
     'scrollToSection',
-    'Smoothly scrolls the single-page site to one of its sections. Sections are: ' +
+    'Smoothly scrolls the single-page site to one of its sections. This is the DEFAULT action when the visitor asks about a section (projects, skills, experience, qualifications, contact, etc.) — scroll to the section and keep the chat reply brief, without dumping the section data into the chat. Only fetch and show the data in the chat (getProjects, getSkills, etc.) when the visitor explicitly asks for the details or a list. Sections are: ' +
       SECTION_OPTIONS.join(', ') +
-      '. Use this to navigate the page for the visitor.',
+      '.',
     { section: { type: 'string', enum: SECTION_OPTIONS, description: 'Target section id' } },
     ['section']
   ),
   functionTool(
     'openProject',
-    'Opens a specific project details modal in the Projects section (scrolls there and opens the card). Call getProjects first to find the exact project id or title.',
+    'Opens a specific project details modal in the Projects section (scrolls there and opens the card). If a project modal is already open, close it first with closeProjectModal. Call getProjects first to find the exact project id or title.',
     {
       id: { type: 'string', description: 'The project id from getProjects' },
       title: { type: 'string', description: 'The exact project title from getProjects' },
     }
+  ),
+  functionTool(
+    'closeProjectModal',
+    'Closes the currently open project details modal, if any. Use it when the visitor asks to close the modal or before opening a different project.',
+    {}
   ),
   functionTool(
     'openExternalUrl',

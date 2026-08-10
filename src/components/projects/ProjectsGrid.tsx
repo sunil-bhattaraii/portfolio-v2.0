@@ -4,6 +4,12 @@ import React, { useEffect, useState } from 'react';
 import ProjectCard from './ProjectCard';
 import ProjectModal from './ProjectModal';
 import type { Project } from '../../types';
+import {
+  openProjectModal,
+  closeProjectModal,
+  OPEN_PROJECT_MODAL_EVENT,
+  CLOSE_PROJECT_MODAL_EVENT,
+} from '@/lib/project-modal';
 
 interface ProjectsGridProps {
   projects: Project[];
@@ -13,12 +19,17 @@ const ProjectsGrid: React.FC<ProjectsGridProps> = ({ projects }) => {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
   useEffect(() => {
-    const handler = (event: Event) => {
+    const onOpen = (event: Event) => {
       const project = (event as CustomEvent<Project>).detail;
       if (project) setSelectedProject(project);
     };
-    window.addEventListener('open-project-modal', handler);
-    return () => window.removeEventListener('open-project-modal', handler);
+    const onClose = () => setSelectedProject(null);
+    window.addEventListener(OPEN_PROJECT_MODAL_EVENT, onOpen);
+    window.addEventListener(CLOSE_PROJECT_MODAL_EVENT, onClose);
+    return () => {
+      window.removeEventListener(OPEN_PROJECT_MODAL_EVENT, onOpen);
+      window.removeEventListener(CLOSE_PROJECT_MODAL_EVENT, onClose);
+    };
   }, []);
 
   return (
@@ -28,7 +39,7 @@ const ProjectsGrid: React.FC<ProjectsGridProps> = ({ projects }) => {
           <ProjectCard
             key={project.id}
             project={project}
-            onClick={() => setSelectedProject(project)}
+            onClick={() => openProjectModal(project)}
           />
         ))}
       </div>
@@ -36,7 +47,7 @@ const ProjectsGrid: React.FC<ProjectsGridProps> = ({ projects }) => {
       {selectedProject && (
         <ProjectModal
           project={selectedProject}
-          onClose={() => setSelectedProject(null)}
+          onClose={closeProjectModal}
         />
       )}
     </>

@@ -4,6 +4,14 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Bot, Send, X, Sparkles, Terminal, Check } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { submitContact } from '@/lib/web3forms';
+import {
+  getProjectModalState,
+  openProjectModal,
+  closeProjectModal,
+  PROJECT_MODAL_STATE_EVENT,
+} from '@/lib/project-modal';
+import type { ProjectModalState } from '@/lib/project-modal';
+import type { Project } from '@/types';
 
 export type ChatMessage = { role: 'user' | 'ai'; text: string };
 
@@ -24,6 +32,16 @@ type ToolActivity = {
   status: 'running' | 'done' | 'error';
 };
 
+type Notice = { id: number; text: string };
+
+const INTERACTIVE_TOOLS = new Set([
+  'scrollToSection',
+  'openProject',
+  'closeProjectModal',
+  'openExternalUrl',
+  'sendEmail',
+]);
+
 const SUGGESTIONS = [
   'Show me your projects',
   'Scroll to the skills section',
@@ -37,6 +55,8 @@ const toolLabel = (name: string, args?: Record<string, unknown>) => {
       return `Scrolled to ${String(args?.section ?? 'section')}`;
     case 'openProject':
       return 'Opened project';
+    case 'closeProjectModal':
+      return 'Closed project modal';
     case 'openExternalUrl':
       return 'Opened link';
     case 'getProjects':
@@ -79,15 +99,59 @@ const AIAssistantClient: React.FC = () => {
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [toolActivity, setToolActivity] = useState<ToolActivity[]>([]);
+  const [notices, setNotices] = useState<Notice[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const messagesRef = useRef<ChatMessage[]>(messages);
   const historyRef = useRef<OpenAIMessage[]>([]);
   const replyIndexRef = useRef<number | null>(null);
+  const modalStateRef = useRef<ProjectModalState>(getProjectModalState());
+  const interactiveRanRef = useRef(false);
+  const actionSummariesRef = useRef<string[]>([]);
+  const noticeIdRef = useRef(0);
+  const noticeTimersRef = useRef<number[]>([]);
+
+  useEffect(() => {
+    const onModalState = (event: Event) => {
+      modalStateRef.current = (event as CustomEvent<ProjectModalState>).detail;
+    };
+    window.addEventListener(PROJECT_MODAL_STATE_EVENT, onModalState);
+    return () =>
+      window.removeEventListener(PROJECT_MODAL_STATE_EVENT, onModalState);
+  }, []);
+
+  useEffect(() => {
+    const timers = noticeTimersRef.current;
+    return () => {
+      timers.forEach((timer) => window.clearTimeout(timer));
+    };
+  }, []);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, toolActivity]);
+
+  const pushNotice = (text: string) => {
+    const id = ++noticeIdRef.current;
+    setNotices((prev) => [...prev.slice(-2), { id, text }]);
+    const timer = window.setTimeout(() => {
+      setNotices((prev) => prev.filter((n) => n.id !== id));
+    }, 6000);
+    noticeTimersRef.current.push(timer);
+  };
+
+  const removeNotice = (id: number) => {
+    setNotices((prev) => prev.filter((n) => n.id !== id));
+  };
+
+  const buildUiStateContext = () => {
+    const state = modalStateRef.current;
+    if (state.open && state.project) {
+      return `A project details modal is currently open for "${state.project.title}". To show a different project, close it first with closeProjectModal.`;
+    }
+    if (state.open) return 'A project details modal is currently open.';
+    return 'No project modal is currently open.';
+  };
 
   const applyMessages = (next: ChatMessage[]) => {
     messagesRef.current = next;
@@ -157,7 +221,7 @@ const AIAssistantClient: React.FC = () => {
       case 'openProject': {
         const projects = (await fetch('/api/projects').then((r) =>
           r.json()
-        )) as { id: string; title: string }[];
+        )) as Project[];
         const match =
           projects.find((p) => p.id === args.id) ??
           projects.find(
@@ -169,10 +233,15 @@ const AIAssistantClient: React.FC = () => {
           throw new Error('Project not found. Check the id/title from getProjects.');
         }
         document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' });
-        window.dispatchEvent(
-          new CustomEvent('open-project-modal', { detail: match })
-        );
-        return `Opened the "${match.title}" project details.`;
+        openProjectModal(match);
+        return `Opened the "${match.title}" project details modal.`;
+      }
+      case 'closeProjectModal': {
+        if (!getProjectModalState().open) {
+          return 'There was no project modal open.';
+        }
+        closeProjectModal();
+        return 'Closed the project details modal.';
       }
       case 'openExternalUrl': {
         const url = String(args.url ?? '');
@@ -216,7 +285,10 @@ const AIAssistantClient: React.FC = () => {
     const res = await fetch('/api/chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ messages: historyRef.current }),
+      body: JSON.stringify({
+        messages: historyRef.current,
+        context: buildUiStateContext(),
+      }),
     });
     if (!res.ok || !res.body) {
       throw new Error(`Chat request failed (${res.status}).`);
@@ -286,6 +358,12 @@ const AIAssistantClient: React.FC = () => {
         result = `Error: ${error instanceof Error ? error.message : 'Tool failed.'}`;
         setToolStatus(activityKey, 'error');
       }
+      if (INTERACTIVE_TOOLS.has(call.name)) {
+        interactiveRanRef.current = true;
+        if (!result.startsWith('Error:')) {
+          actionSummariesRef.current.push(result);
+        }
+      }
       historyRef.current.push({
         role: 'tool',
         tool_call_id: call.id,
@@ -302,6 +380,8 @@ const AIAssistantClient: React.FC = () => {
 
     replyIndexRef.current = null;
     setToolActivity([]);
+    interactiveRanRef.current = false;
+    actionSummariesRef.current = [];
     pushUserMessage(trimmed);
     historyRef.current.push({ role: 'user', content: trimmed });
     setInputValue('');
@@ -311,6 +391,20 @@ const AIAssistantClient: React.FC = () => {
       let finished = false;
       while (!finished) {
         finished = await runTurn();
+      }
+
+      if (interactiveRanRef.current) {
+        setIsOpen(false);
+        const reply =
+          replyIndexRef.current !== null
+            ? (messagesRef.current[replyIndexRef.current]?.text ?? '')
+            : '';
+        const source = (reply.trim() ? reply.trim() : actionSummariesRef.current[0])
+          ?.replace(/[`*#_>]/g, '')
+          .replace(/\s+/g, ' ')
+          .trim();
+        const text = source || 'Action completed.';
+        pushNotice(text.length > 120 ? `${text.slice(0, 120).trimEnd()}…` : text);
       }
     } catch (error) {
       console.error('AI Error:', error);
@@ -333,10 +427,37 @@ const AIAssistantClient: React.FC = () => {
 
   return (
     <div className="fixed bottom-8 right-8 z-1100 flex flex-col items-end">
-      {isHovered && !isOpen && (
+      {isHovered && !isOpen && notices.length === 0 && (
         <div className="mb-4 mr-2 bg-sky-600 text-white text-[11px] font-bold uppercase tracking-wider px-4 py-2 rounded-full shadow-2xl flex items-center gap-2 pointer-events-none">
           <Sparkles size={12} className="animate-pulse" />
           Chat with my persona
+        </div>
+      )}
+
+      {!isOpen && notices.length > 0 && (
+        <div className="mb-4 mr-1 flex flex-col items-end gap-2 max-w-[280px]">
+          {notices.map((notice) => (
+            <div
+              key={notice.id}
+              onClick={() => setIsOpen(true)}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => e.key === 'Enter' && setIsOpen(true)}
+              className="cursor-pointer group text-left bg-zinc-900/95 backdrop-blur border border-white/10 rounded-2xl rounded-br-none px-4 py-3 shadow-2xl text-sm text-zinc-300 hover:border-sky-500/50 transition-colors flex items-start gap-2"
+            >
+              <span className="flex-1 leading-snug line-clamp-3">{notice.text}</span>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  removeNotice(notice.id);
+                }}
+                className="text-zinc-600 group-hover:text-white shrink-0"
+                aria-label="Dismiss notification"
+              >
+                <X size={14} />
+              </button>
+            </div>
+          ))}
         </div>
       )}
 

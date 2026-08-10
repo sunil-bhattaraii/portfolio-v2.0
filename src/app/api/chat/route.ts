@@ -25,6 +25,10 @@ const DEFAULT_MODEL = 'meta/llama-3.1-8b-instruct';
 export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => null);
   const history = Array.isArray(body?.messages) ? body.messages : [];
+  const context =
+    typeof body?.context === 'string' && body.context.trim()
+      ? body.context.trim()
+      : '';
 
   const encoder = new TextEncoder();
 
@@ -66,7 +70,15 @@ export async function POST(req: NextRequest) {
           {
             model: process.env.NIM_MODEL || DEFAULT_MODEL,
             stream: true,
-            messages: [{ role: 'system', content: instruction }, ...history],
+            messages: [
+              {
+                role: 'system',
+                content: context
+                  ? `${instruction}\n\nCURRENT UI STATE:\n${context}`
+                  : instruction,
+              },
+              ...history,
+            ],
             tools: CHAT_TOOLS,
             tool_choice: 'auto',
           },
