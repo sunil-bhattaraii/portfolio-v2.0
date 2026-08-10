@@ -2,6 +2,7 @@ import OpenAI from 'openai';
 import { NextRequest } from 'next/server';
 import { CHAT_TOOLS } from '@/lib/chat-tools';
 import { getAIInstruction, getAIModel } from '@/lib/queries';
+import { buildPortfolioContext } from '@/lib/portfolio-context';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -63,21 +64,24 @@ export async function POST(req: NextRequest) {
       };
 
       try {
-        const [instruction, model] = await Promise.all([
+        const [instruction, model, portfolioContext] = await Promise.all([
           getAIInstruction(),
           getAIModel(),
+          buildPortfolioContext(),
         ]);
+        const systemContent = [
+          instruction,
+          portfolioContext,
+          context ? `CURRENT UI STATE:\n${context}` : '',
+        ]
+          .filter(Boolean)
+          .join('\n\n');
         const stream = await openai.chat.completions.create(
           {
             model,
             stream: true,
             messages: [
-              {
-                role: 'system',
-                content: context
-                  ? `${instruction}\n\nCURRENT UI STATE:\n${context}`
-                  : instruction,
-              },
+              { role: 'system', content: systemContent },
               ...history,
             ],
             tools: CHAT_TOOLS,

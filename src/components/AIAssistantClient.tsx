@@ -60,6 +60,7 @@ const SUGGESTIONS = [
 const CHAT_STORAGE_KEY = 'sunil-portfolio-chat';
 const CONVERSATION_STORAGE_KEY = 'sunil-portfolio-conversation';
 const MAX_MESSAGES = 20;
+const MODEL_HISTORY_LIMIT = 4;
 
 const getConversationId = (): string => {
   try {
@@ -131,18 +132,6 @@ const toolLabel = (name: string, args?: Record<string, unknown>) => {
       return 'Opened project page';
     case 'openExternalUrl':
       return 'Opened link';
-    case 'getProjects':
-      return 'Fetched projects';
-    case 'getSkills':
-      return 'Fetched skills';
-    case 'getExperience':
-      return 'Fetched experience';
-    case 'getQualifications':
-      return 'Fetched qualifications';
-    case 'getSocials':
-      return 'Fetched socials';
-    case 'getSiteConfig':
-      return 'Fetched site info';
     case 'sendEmail':
       return 'Sent email';
     default:
@@ -244,7 +233,7 @@ const AIAssistantClient: React.FC = () => {
     const path =
       typeof window !== 'undefined' ? window.location.pathname : '/';
     if (path.startsWith('/projects/')) {
-      return `The visitor is currently on a single project page (/projects/{id}). To show a different project, call getProjects first, then openProject with the exact id or title of the requested project. Use scrollToSection to go back to the home sections.`;
+      return `The visitor is currently on a single project page (/projects/{id}). To show a different project, call openProject with the exact id or title from the PORTFOLIO DATA in your context. Use scrollToSection to go back to the home sections.`;
     }
     return `The visitor is on the home page (${path}).`;
   };
@@ -303,12 +292,6 @@ const AIAssistantClient: React.FC = () => {
     );
   };
 
-  const fetchText = async (url: string) => {
-    const res = await fetch(url);
-    if (!res.ok) throw new Error(`Failed to fetch ${url}`);
-    return res.text();
-  };
-
   const executeTool = async (
     name: string,
     argsJson: string
@@ -341,7 +324,9 @@ const AIAssistantClient: React.FC = () => {
               String(args.title ?? '').toLowerCase()
           );
         if (!match) {
-          throw new Error('Project not found. Check the id/title from getProjects.');
+          throw new Error(
+            'Project not found. Check the id/title from the PORTFOLIO DATA.'
+          );
         }
         router.push(`/projects/${match.id}`);
         return `Navigated to the "${match.title}" project page.`;
@@ -413,18 +398,6 @@ const AIAssistantClient: React.FC = () => {
         window.open(url, '_blank', 'noopener,noreferrer');
         return `Opened ${url} in a new tab.`;
       }
-      case 'getProjects':
-        return fetchText('/api/projects');
-      case 'getSkills':
-        return fetchText('/api/skills');
-      case 'getExperience':
-        return fetchText('/api/experience');
-      case 'getQualifications':
-        return fetchText('/api/qualifications');
-      case 'getSocials':
-        return fetchText('/api/socials');
-      case 'getSiteConfig':
-        return fetchText('/api/site-config');
       case 'sendEmail': {
         const name = String(args.name ?? '').trim();
         const email = String(args.email ?? '').trim();
@@ -604,7 +577,7 @@ const AIAssistantClient: React.FC = () => {
     pushUserMessage(trimmed);
     storeChatMessage('user', trimmed);
     historyRef.current = messagesRef.current
-      .slice(-MAX_MESSAGES)
+      .slice(-MODEL_HISTORY_LIMIT)
       .map<OpenAIMessage>((m) => ({
         role: m.role === 'user' ? 'user' : 'assistant',
         content: m.text,

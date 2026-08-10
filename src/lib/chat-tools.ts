@@ -2,12 +2,6 @@ export type ToolName =
   | 'scrollToSection'
   | 'openProject'
   | 'openExternalUrl'
-  | 'getProjects'
-  | 'getSkills'
-  | 'getExperience'
-  | 'getQualifications'
-  | 'getSocials'
-  | 'getSiteConfig'
   | 'sendEmail';
 
 const SECTION_OPTIONS = [
@@ -41,7 +35,7 @@ const functionTool = (
 export const CHAT_TOOLS = [
   functionTool(
     'scrollToSection',
-    'Smoothly scrolls the single-page site to one of its sections. This is the DEFAULT action when the visitor asks about a section (projects, skills, experience, qualifications, contact, etc.) — scroll to the section and keep the chat reply brief, without dumping the section data into the chat. Only fetch and show the data in the chat (getProjects, getSkills, etc.) when the visitor explicitly asks for the details or a list. Do NOT scroll for greetings, small talk, or general questions — answer those with text only. Sections are: ' +
+    'Smoothly scrolls the single-page site to one of its sections. This is the DEFAULT action when the visitor asks to go to or see a section (projects, skills, experience, qualifications, contact, etc.) — scroll to the section and keep the chat reply brief. Portfolio data is already in your context, so never call a tool to fetch or list it. Do NOT scroll for greetings, small talk, or general questions — answer those with text only. Sections are: ' +
       SECTION_OPTIONS.join(', ') +
       '.',
     { section: { type: 'string', enum: SECTION_OPTIONS, description: 'Target section id' } },
@@ -49,47 +43,17 @@ export const CHAT_TOOLS = [
   ),
   functionTool(
     'openProject',
-    'Navigates the visitor to the dedicated page for ONE single project at /projects/{id} (live preview, tech stack, status, Live Site / Repository buttons, full details). Use this ONLY when the visitor names or asks to open a specific project, e.g. "show me the chess trainer project". For an overview such as "show me your projects", use scrollToSection("projects") instead — NEVER call openProject repeatedly to walk through the whole project list. Call getProjects first to find the exact id or title.',
+    'Navigates the visitor to the dedicated page for ONE single project at /projects/{id} (live preview, tech stack, status, Live Site / Repository buttons, full details). Use this ONLY when the visitor names or asks to open a specific project, e.g. "show me the chess trainer project". For an overview such as "show me your projects", use scrollToSection("projects") instead — NEVER call openProject repeatedly to walk through the whole project list. Use the exact id and title from the PORTFOLIO DATA in your context.',
     {
-      id: { type: 'string', description: 'The project id from getProjects' },
-      title: { type: 'string', description: 'The exact project title from getProjects' },
+      id: { type: 'string', description: 'The project id from PORTFOLIO DATA' },
+      title: { type: 'string', description: 'The exact project title from PORTFOLIO DATA' },
     }
   ),
   functionTool(
     'openExternalUrl',
-    'Opens an external URL in a new browser tab (a social profile, GitHub repository, or live project demo). ONLY works with real URLs from the portfolio data: a project\'s liveUrl or githubUrl (from getProjects), or a social href (from getSocials). NEVER invent, guess, or reconstruct a URL — fetch the data first and pass the exact URL returned. http(s) only.',
-    { url: { type: 'string', description: 'The exact http(s) URL from getProjects or getSocials' } },
+    'Opens an external URL in a new browser tab (a social profile, GitHub repository, or live project demo). ONLY works with real URLs from the PORTFOLIO DATA in your context: a project\'s liveUrl or githubUrl, or a social href. NEVER invent, guess, or reconstruct a URL — pass the exact URL from PORTFOLIO DATA. http(s) only.',
+    { url: { type: 'string', description: 'The exact http(s) URL from PORTFOLIO DATA' } },
     ['url']
-  ),
-  functionTool(
-    'getProjects',
-    'Fetches the portfolio projects from the database on demand: titles, descriptions, tech stacks, status, github and live links. Call this instead of guessing about projects.',
-    {}
-  ),
-  functionTool(
-    'getSkills',
-    'Fetches the portfolio skills from the database on demand: names, levels, and highlighted skills. Call this instead of guessing about skills.',
-    {}
-  ),
-  functionTool(
-    'getExperience',
-    'Fetches the work experience entries from the database on demand: role, company, duration, and key responsibilities. Call this instead of guessing about experience.',
-    {}
-  ),
-  functionTool(
-    'getQualifications',
-    'Fetches the qualifications from the database on demand: degrees, institutes, and years. Call this instead of guessing about education.',
-    {}
-  ),
-  functionTool(
-    'getSocials',
-    'Fetches Sunil social media links from the database on demand. Use this before offering social profiles, then open the link with openExternalUrl.',
-    {}
-  ),
-  functionTool(
-    'getSiteConfig',
-    'Fetches the site configuration on demand: hero name/role, contact email/phone/location, and about text. Call this for contact or profile details.',
-    {}
   ),
   functionTool(
     'sendEmail',
