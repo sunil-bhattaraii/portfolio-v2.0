@@ -49,6 +49,42 @@ const SUGGESTIONS = [
   'Send you an email',
 ];
 
+const CHAT_STORAGE_KEY = 'sunil-portfolio-chat';
+const MAX_MESSAGES = 20;
+
+const INITIAL_MESSAGE =
+  "Initializing persona... Connection established. I am Sunil's digital twin. How can I assist you today?";
+
+const loadPersistedMessages = (): ChatMessage[] => {
+  try {
+    const raw = localStorage.getItem(CHAT_STORAGE_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return [];
+    return parsed
+      .filter(
+        (m): m is ChatMessage =>
+          !!m &&
+          (m.role === 'user' || m.role === 'ai') &&
+          typeof m.text === 'string'
+      )
+      .slice(-MAX_MESSAGES);
+  } catch {
+    return [];
+  }
+};
+
+const persistMessages = (msgs: ChatMessage[]) => {
+  try {
+    localStorage.setItem(
+      CHAT_STORAGE_KEY,
+      JSON.stringify(msgs.slice(-MAX_MESSAGES))
+    );
+  } catch {
+    // storage unavailable; ignore
+  }
+};
+
 const toolLabel = (name: string, args?: Record<string, unknown>) => {
   switch (name) {
     case 'scrollToSection':
@@ -90,12 +126,10 @@ const safeParse = (raw: string): Record<string, unknown> => {
 const AIAssistantClient: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
-  const [messages, setMessages] = useState<ChatMessage[]>([
-    {
-      role: 'ai',
-      text: "Initializing persona... Connection established. I am Sunil's digital twin. How can I assist you today?",
-    },
-  ]);
+  const [messages, setMessages] = useState<ChatMessage[]>(() => {
+    const saved = loadPersistedMessages();
+    return saved.length ? saved : [{ role: 'ai', text: INITIAL_MESSAGE }];
+  });
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [toolActivity, setToolActivity] = useState<ToolActivity[]>([]);
@@ -139,6 +173,16 @@ const AIAssistantClient: React.FC = () => {
     }
   }, [isLoading]);
 
+  useEffect(() => {
+    persistMessages(messagesRef.current);
+  }, [isLoading]);
+
+  useEffect(() => {
+    return () => {
+      persistMessages(messagesRef.current);
+    };
+  }, []);
+
   const pushNotice = (text: string) => {
     const id = ++noticeIdRef.current;
     setNotices((prev) => [...prev.slice(-2), { id, text }]);
@@ -162,8 +206,13 @@ const AIAssistantClient: React.FC = () => {
   };
 
   const applyMessages = (next: ChatMessage[]) => {
-    messagesRef.current = next;
-    setMessages(next);
+    const drop = Math.max(0, next.length - MAX_MESSAGES);
+    const capped = drop > 0 ? next.slice(drop) : next;
+    if (drop > 0 && replyIndexRef.current !== null) {
+      replyIndexRef.current = Math.max(0, replyIndexRef.current - drop);
+    }
+    messagesRef.current = capped;
+    setMessages(capped);
   };
 
   const appendToReply = (delta: string) => {
@@ -395,7 +444,12 @@ const AIAssistantClient: React.FC = () => {
     interactiveRanRef.current = false;
     actionSummariesRef.current = [];
     pushUserMessage(trimmed);
-    historyRef.current.push({ role: 'user', content: trimmed });
+    historyRef.current = messagesRef.current
+      .slice(-MAX_MESSAGES)
+      .map<OpenAIMessage>((m) => ({
+        role: m.role === 'user' ? 'user' : 'assistant',
+        content: m.text,
+      }));
     setInputValue('');
     setIsLoading(true);
 
