@@ -38,6 +38,13 @@ export async function POST(req: NextRequest) {
       // pulling from NIM and abort the upstream request too.
       const abortController = new AbortController();
       let aborted = false;
+      // Guard against an upstream model that stalls or queues forever (a
+      // common NIM free-tier failure). Surfaces an error instead of hanging.
+      const requestTimeout = setTimeout(
+        () => abortController.abort(),
+        60_000
+      );
+      requestTimeout.unref?.();
 
       const onAbort = () => {
         aborted = true;
@@ -120,13 +127,19 @@ export async function POST(req: NextRequest) {
       } catch (error) {
         if (!aborted) {
           console.error('/api/chat:', error);
+          const timedOut =
+            error instanceof Error && error.name === 'AbortError';
           send({
             type: 'error',
-            message:
-              error instanceof Error ? error.message : 'Unknown error',
+            message: timedOut
+              ? 'The AI provider timed out. Please try again in a moment.'
+              : error instanceof Error
+                ? error.message
+                : 'Unknown error',
           });
         }
       } finally {
+        clearTimeout(requestTimeout);
         req.signal.removeEventListener('abort', onAbort);
         if (controllerSignal?.removeEventListener) {
           controllerSignal.removeEventListener('abort', onAbort);
