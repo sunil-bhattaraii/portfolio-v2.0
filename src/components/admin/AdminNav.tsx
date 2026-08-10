@@ -12,6 +12,7 @@ import {
   Settings,
   ShieldCheck,
   Bot,
+  MessagesSquare,
 } from 'lucide-react';
 
 const NAV_ITEMS = [
@@ -23,6 +24,7 @@ const NAV_ITEMS = [
   { href: '/admin/socials', label: 'Socials', icon: Share2 },
   { href: '/admin/site-config', label: 'Site Config', icon: Settings },
   { href: '/admin/ai-config', label: 'AI Persona', icon: Bot },
+  { href: '/admin/chats', label: 'Chats', icon: MessagesSquare },
   { href: '/admin/allowlist', label: 'Allowlist', icon: ShieldCheck },
 ];
 

@@ -42,6 +42,21 @@ const INTERACTIVE_TOOLS = new Set([
   'sendEmail',
 ]);
 
+const SCROLL_SECTION_REPLIES: Record<string, string> = {
+  home: "I've taken you to the top of my portfolio — where it all begins. What would you like to look at?",
+  about: "Here's my About section — a quick intro to who I am. Take a look!",
+  projects:
+    "I've scrolled you to my Projects — here are some of the things I've built.",
+  skills:
+    "Here's my Skills section — the tools and technologies I work with.",
+  experience:
+    "Here's my Experience — the journey that got me here.",
+  qualifications:
+    "Here are my Qualifications and certifications.",
+  contact:
+    "Here's the Contact section — feel free to reach out, I'd love to hear from you!",
+};
+
 const SUGGESTIONS = [
   'Show me your projects',
   'Scroll to the skills section',
@@ -50,7 +65,37 @@ const SUGGESTIONS = [
 ];
 
 const CHAT_STORAGE_KEY = 'sunil-portfolio-chat';
+const CONVERSATION_STORAGE_KEY = 'sunil-portfolio-conversation';
 const MAX_MESSAGES = 20;
+
+const getConversationId = (): string => {
+  try {
+    let id = localStorage.getItem(CONVERSATION_STORAGE_KEY);
+    if (!id) {
+      id = crypto.randomUUID();
+      localStorage.setItem(CONVERSATION_STORAGE_KEY, id);
+    }
+    return id;
+  } catch {
+    return `conv-${Date.now()}`;
+  }
+};
+
+/**
+ * Fire-and-forget persistence — never awaited, minor failures are acceptable.
+ */
+const storeChatMessage = (role: 'user' | 'ai', content: string) => {
+  try {
+    fetch('/api/chat/store', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      keepalive: true,
+      body: JSON.stringify({ conversationId: getConversationId(), role, content }),
+    }).catch(() => {});
+  } catch {
+    // storage/fetch unavailable; ignore
+  }
+};
 
 const INITIAL_MESSAGE =
   "Initializing persona... Connection established. I am Sunil's digital twin. How can I assist you today?";
@@ -323,11 +368,36 @@ const AIAssistantClient: React.FC = () => {
       case 'getSiteConfig':
         return fetchText('/api/site-config');
       case 'sendEmail': {
-        const { ok, data } = await submitContact({
-          name: String(args.name ?? ''),
-          email: String(args.email ?? ''),
-          message: String(args.message ?? ''),
-        });
+        const name = String(args.name ?? '').trim();
+        const email = String(args.email ?? '').trim();
+        const message = String(args.message ?? '').trim();
+
+        const placeholder =
+          /message content|your name|your email|your message|visitor name|lorem|placeholder|test@|example\.com/i;
+        const problems: string[] = [];
+        if (!name || name.length < 2 || placeholder.test(name)) {
+          problems.push('name');
+        }
+        if (
+          !email ||
+          !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ||
+          placeholder.test(email)
+        ) {
+          problems.push('valid email address');
+        }
+        if (!message || message.length < 5 || placeholder.test(message)) {
+          problems.push('message');
+        }
+
+        if (problems.length > 0) {
+          throw new Error(
+            `Cannot send the email yet: ask the visitor for their ${problems.join(
+              ', '
+            )}. Show the complete message back to them and get explicit confirmation before calling sendEmail again.`
+          );
+        }
+
+        const { ok, data } = await submitContact({ name, email, message });
         if (!ok) {
           throw new Error(
             typeof data?.message === 'string' && data.message
@@ -408,6 +478,7 @@ const AIAssistantClient: React.FC = () => {
       })),
     });
 
+    const results: string[] = [];
     for (const call of calls) {
       const activityKey = call.id || `tool-${toolCalls.size}`;
       setToolStatus(activityKey, 'running');
@@ -419,6 +490,7 @@ const AIAssistantClient: React.FC = () => {
         result = `Error: ${error instanceof Error ? error.message : 'Tool failed.'}`;
         setToolStatus(activityKey, 'error');
       }
+      results.push(result);
       if (INTERACTIVE_TOOLS.has(call.name)) {
         interactiveRanRef.current = true;
         if (!result.startsWith('Error:')) {
@@ -430,6 +502,24 @@ const AIAssistantClient: React.FC = () => {
         tool_call_id: call.id,
         content: result,
       });
+    }
+
+    if (
+      calls.length === 1 &&
+      calls[0].name === 'scrollToSection' &&
+      results[0] &&
+      !results[0].startsWith('Error:')
+    ) {
+      const section = String(safeParse(calls[0].args)?.section ?? '').trim();
+      if (section) {
+        if (!streamedText) {
+          appendToReply(
+            SCROLL_SECTION_REPLIES[section] ??
+              `I've taken you to the ${section} section.`
+          );
+        }
+        return true;
+      }
     }
 
     return false;
@@ -444,6 +534,7 @@ const AIAssistantClient: React.FC = () => {
     interactiveRanRef.current = false;
     actionSummariesRef.current = [];
     pushUserMessage(trimmed);
+    storeChatMessage('user', trimmed);
     historyRef.current = messagesRef.current
       .slice(-MAX_MESSAGES)
       .map<OpenAIMessage>((m) => ({
@@ -458,6 +549,12 @@ const AIAssistantClient: React.FC = () => {
       while (!finished) {
         finished = await runTurn();
       }
+
+      const finalReply =
+        replyIndexRef.current !== null
+          ? (messagesRef.current[replyIndexRef.current]?.text ?? '')
+          : '';
+      if (finalReply.trim()) storeChatMessage('ai', finalReply);
 
       if (interactiveRanRef.current) {
         setIsOpen(false);

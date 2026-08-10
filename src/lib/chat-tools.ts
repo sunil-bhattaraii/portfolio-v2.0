@@ -42,7 +42,7 @@ const functionTool = (
 export const CHAT_TOOLS = [
   functionTool(
     'scrollToSection',
-    'Smoothly scrolls the single-page site to one of its sections. This is the DEFAULT action when the visitor asks about a section (projects, skills, experience, qualifications, contact, etc.) — scroll to the section and keep the chat reply brief, without dumping the section data into the chat. Only fetch and show the data in the chat (getProjects, getSkills, etc.) when the visitor explicitly asks for the details or a list. Sections are: ' +
+    'Smoothly scrolls the single-page site to one of its sections. This is the DEFAULT action when the visitor asks about a section (projects, skills, experience, qualifications, contact, etc.) — scroll to the section and keep the chat reply brief, without dumping the section data into the chat. Only fetch and show the data in the chat (getProjects, getSkills, etc.) when the visitor explicitly asks for the details or a list. Do NOT scroll for greetings, small talk, or general questions — answer those with text only. Sections are: ' +
       SECTION_OPTIONS.join(', ') +
       '.',
     { section: { type: 'string', enum: SECTION_OPTIONS, description: 'Target section id' } },
