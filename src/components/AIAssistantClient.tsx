@@ -128,8 +128,16 @@ const AIAssistantClient: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages, toolActivity]);
+    if (isOpen) {
+      messagesEndRef.current?.scrollIntoView({ behavior: 'auto' });
+    }
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (isLoading) {
+      messagesEndRef.current?.scrollIntoView({ behavior: 'auto' });
+    }
+  }, [isLoading]);
 
   const pushNotice = (text: string) => {
     const id = ++noticeIdRef.current;
@@ -487,32 +495,27 @@ const AIAssistantClient: React.FC = () => {
 
       {isOpen && (
         <div className="absolute bottom-20 right-0 w-[90vw] md:w-[400px] h-[600px] max-h-[80vh] bg-zinc-950/95 backdrop-blur-2xl rounded-3xl overflow-hidden shadow-[0_50px_100px_-20px_rgba(0,0,0,0.8)] flex flex-col border border-white/10">
-          <div className="p-6 bg-black/40 border-b border-white/5 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-sky-500/10 flex items-center justify-center border border-sky-500/20">
-                <Terminal size={18} className="text-sky-500" />
+          <div className="px-4 py-3 bg-black/40 border-b border-white/5 flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-lg bg-sky-500/10 flex items-center justify-center border border-sky-500/20">
+                <Terminal size={14} className="text-sky-500" />
               </div>
-              <div>
-                <h4 className="text-sm font-black text-white uppercase tracking-wider">
+              <div className="flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                <h4 className="text-xs font-black text-white uppercase tracking-wider">
                   Sunil Persona
                 </h4>
-                <div className="flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                  <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest transition-all">
-                    Persona Online
-                  </span>
-                </div>
               </div>
             </div>
             <button
               onClick={() => setIsOpen(false)}
-              className="p-2 text-zinc-500 hover:text-white transition-colors"
+              className="p-1.5 text-zinc-500 hover:text-white transition-colors"
             >
-              <X size={20} />
+              <X size={18} />
             </button>
           </div>
 
-          <div className="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar bg-zinc-950/20">
+          <div className="flex-1 overflow-y-auto p-4 space-y-5 custom-scrollbar bg-zinc-950/20">
             {messages.map((msg, i) => {
               const isLastReply =
                 msg.role === 'ai' && i === messages.length - 1;
@@ -607,8 +610,8 @@ const AIAssistantClient: React.FC = () => {
             <div ref={messagesEndRef} />
           </div>
 
-          <div className="p-6 bg-black/40 border-t border-white/5 space-y-4">
-            <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
+          <div className="px-4 py-3 bg-black/40 border-t border-white/5 space-y-3">
+            <div className="flex gap-2 overflow-x-auto no-scrollbar">
               {SUGGESTIONS.map((suggestion, i) => (
                 <button
                   key={i}
@@ -627,19 +630,16 @@ const AIAssistantClient: React.FC = () => {
                 onChange={(e) => setInputValue(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
                 placeholder="Ask my persona anything..."
-                className="w-full pl-5 pr-14 py-4 bg-zinc-950 border border-white/10 rounded-2xl text-white text-sm focus:outline-none focus:border-sky-500/50 transition-colors"
+                className="w-full pl-4 pr-12 py-3 bg-zinc-950 border border-white/10 rounded-2xl text-white text-sm focus:outline-none focus:border-sky-500/50 transition-colors"
               />
               <button
                 onClick={() => handleSendMessage()}
                 disabled={!inputValue.trim() || isLoading}
-                className="absolute right-2 top-2 w-10 h-10 bg-sky-600 text-white rounded-xl flex items-center justify-center hover:bg-sky-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                className="absolute right-1.5 top-1.5 w-9 h-9 bg-sky-600 text-white rounded-xl flex items-center justify-center hover:bg-sky-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
               >
                 <Send size={16} />
               </button>
             </div>
-            <p className="text-[9px] text-center text-zinc-600 font-bold uppercase tracking-[0.2em]">
-              Secure End-to-End Persona Protocol
-            </p>
           </div>
         </div>
       )}
