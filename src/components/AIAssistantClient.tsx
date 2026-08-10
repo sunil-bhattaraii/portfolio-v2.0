@@ -175,6 +175,10 @@ const AIAssistantClient: React.FC = () => {
   };
 
   const upsertToolActivity = (key: string, name?: string) => {
+    if (name && !INTERACTIVE_TOOLS.has(name)) {
+      setToolActivity((prev) => prev.filter((t) => t.key !== key));
+      return;
+    }
     setToolActivity((prev) => {
       const existing = prev.find((t) => t.key === key);
       if (existing) {
@@ -518,7 +522,7 @@ const AIAssistantClient: React.FC = () => {
                   className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
                 >
                   <div
-                    className={`max-w-[85%] p-4 rounded-2xl text-sm leading-relaxed ${
+                    className={`min-w-0 max-w-[85%] break-words p-4 rounded-2xl text-sm leading-relaxed ${
                       msg.role === 'user'
                         ? 'bg-sky-600 text-white rounded-tr-none shadow-lg'
                         : 'bg-zinc-900/80 border border-white/5 text-zinc-300 rounded-tl-none shadow-md'
@@ -548,7 +552,13 @@ const AIAssistantClient: React.FC = () => {
                             ),
                             code: ({ node: _node, ...props }) => (
                               <code
-                                className="bg-zinc-800/80 px-1.5 py-0.5 rounded text-[11px] font-mono text-sky-300 border border-white/5"
+                                className="bg-zinc-800/80 px-1.5 py-0.5 rounded text-[11px] font-mono text-sky-300 border border-white/5 break-words"
+                                {...props}
+                              />
+                            ),
+                            pre: ({ node: _node, ...props }) => (
+                              <pre
+                                className="whitespace-pre-wrap break-words bg-zinc-800/40 border border-white/10 rounded-lg p-3 my-2 text-[11px] font-mono text-sky-200 overflow-x-auto"
                                 {...props}
                               />
                             ),
