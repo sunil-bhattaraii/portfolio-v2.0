@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
     }
     const skill = await SkillModel.create({
       name: body.name,
-      level: body.level ?? 'Intermediate',
+      level: body.level || 'Intermediate',
       icon: body.icon ?? 'Monitor',
       highlight: Boolean(body.highlight),
       categories: Array.isArray(body.categories) ? body.categories : [],

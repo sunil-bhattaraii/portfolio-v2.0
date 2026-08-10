@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
       imageUrl: body.imageUrl ?? '',
       githubUrl: body.githubUrl ?? '',
       liveUrl: body.liveUrl ?? '',
-      status: body.status ?? 'Completed',
+      status: body.status || 'Completed',
       fullDetails: body.fullDetails ?? '',
       order: Number(body.order) || 0,
     });

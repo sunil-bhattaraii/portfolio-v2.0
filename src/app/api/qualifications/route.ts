@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
       institute: body.institute,
       year: body.year,
       details: body.details ?? '',
-      type: body.type,
+      type: body.type || 'degree',
       order: Number(body.order) || 0,
     });
     invalidate('qualifications');

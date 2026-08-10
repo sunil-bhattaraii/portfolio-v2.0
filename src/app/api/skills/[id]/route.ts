@@ -19,7 +19,7 @@ export async function PATCH(req: NextRequest, { params }: Params) {
       id,
       {
         name: body.name,
-        level: body.level,
+        level: body.level || 'Intermediate',
         icon: body.icon,
         highlight: Boolean(body.highlight),
         categories: Array.isArray(body.categories) ? body.categories : [],
