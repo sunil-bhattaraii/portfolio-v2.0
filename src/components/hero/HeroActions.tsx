@@ -1,8 +1,9 @@
 'use client';
 
 import React from 'react';
-import { ArrowRight, Terminal, GraduationCap } from 'lucide-react';
+import { ArrowRight, Terminal, GraduationCap, Compass } from 'lucide-react';
 import { Section } from '../../types';
+import { TOUR_EVENT_BEGIN } from '@/lib/site-tour';
 
 const HeroActions: React.FC = () => {
   const scrollTo = (id: string) => {
@@ -13,6 +14,10 @@ const HeroActions: React.FC = () => {
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });
     }
+  };
+
+  const startTour = () => {
+    window.dispatchEvent(new CustomEvent(TOUR_EVENT_BEGIN));
   };
 
   return (
@@ -38,6 +43,15 @@ const HeroActions: React.FC = () => {
           className="px-4 py-3 md:py-4 text-zinc-400 hover:text-white font-bold flex items-center justify-center gap-2 transition-all active:scale-95 text-xs md:text-base bg-transparent border-none"
         >
           <GraduationCap size={18} className="text-sky-500" /> Academics
+        </button>
+      </div>
+
+      <div className="w-full lg:w-auto flex justify-center lg:justify-start">
+        <button
+          onClick={startTour}
+          className="px-5 py-3 md:py-3.5 text-sky-400 hover:text-white font-bold flex items-center justify-center gap-2 transition-all active:scale-95 text-xs md:text-sm bg-sky-500/5 border border-sky-500/30 hover:bg-sky-500/15 hover:border-sky-400/50 rounded-lg"
+        >
+          <Compass size={18} className="text-sky-500" /> Take a Tour
         </button>
       </div>
     </div>

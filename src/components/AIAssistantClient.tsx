@@ -2,9 +2,17 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { motion } from 'framer-motion';
 import { Bot, Send, X, Sparkles, Terminal, Check } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { submitContact } from '@/lib/web3forms';
+import {
+  DEFAULT_CORNER,
+  TOUR_EVENT_CORNER,
+  TOUR_EVENT_NARRATE,
+  TOUR_EVENT_STATUS,
+  type TourCorner,
+} from '@/lib/site-tour';
 import type { Project } from '@/types';
 
 export type ChatMessage = { role: 'user' | 'ai'; text: string };
@@ -159,6 +167,16 @@ const AIAssistantClient: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [toolActivity, setToolActivity] = useState<ToolActivity[]>([]);
   const [notices, setNotices] = useState<Notice[]>([]);
+  const [corner, setCorner] = useState<TourCorner>(DEFAULT_CORNER);
+  const [offsets, setOffsets] = useState<
+    Record<TourCorner, { x: number; y: number }>
+  >({
+    'bottom-right': { x: 0, y: 0 },
+    'bottom-left': { x: 0, y: 0 },
+    'top-right': { x: 0, y: 0 },
+    'top-left': { x: 0, y: 0 },
+  });
+  const [isTourActive, setIsTourActive] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -200,12 +218,44 @@ const AIAssistantClient: React.FC = () => {
     };
   }, []);
 
+  useEffect(() => {
+    const computeOffsets = () => {
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      const btnSize = 64;
+      const margin = 32;
+      const headerHeight =
+        document.querySelector('header')?.getBoundingClientRect().height ?? 72;
+      const topOffset = headerHeight + 20;
+      const xLeft = -(vw - btnSize - margin * 2);
+      const yTop = -(vh - btnSize - margin - topOffset);
+      setOffsets({
+        'bottom-right': { x: 0, y: 0 },
+        'bottom-left': { x: xLeft, y: 0 },
+        'top-right': { x: 0, y: yTop },
+        'top-left': { x: xLeft, y: yTop },
+      });
+    };
+    computeOffsets();
+    window.addEventListener('resize', computeOffsets);
+    return () => window.removeEventListener('resize', computeOffsets);
+  }, []);
+
   const pushNotice = (text: string) => {
     const id = ++noticeIdRef.current;
     setNotices((prev) => [...prev.slice(-2), { id, text }]);
     const timer = window.setTimeout(() => {
       setNotices((prev) => prev.filter((n) => n.id !== id));
     }, 6000);
+    noticeTimersRef.current.push(timer);
+  };
+
+  const showTourBubble = (text: string, duration = 6000) => {
+    const id = ++noticeIdRef.current;
+    setNotices([{ id, text }]);
+    const timer = window.setTimeout(() => {
+      setNotices((prev) => prev.filter((n) => n.id !== id));
+    }, duration);
     noticeTimersRef.current.push(timer);
   };
 
@@ -259,6 +309,41 @@ const AIAssistantClient: React.FC = () => {
     }
     applyMessages(next);
   };
+
+  useEffect(() => {
+    const onNarrate = (e: Event) => {
+      const detail = (
+        e as CustomEvent<{ text?: string; duration?: number }>
+      ).detail;
+      if (detail?.text) {
+        showTourBubble(detail.text, detail.duration ?? 6000);
+      }
+    };
+    const onCorner = (e: Event) => {
+      const next = (e as CustomEvent<{ corner?: TourCorner }>).detail?.corner;
+      if (
+        next === 'bottom-right' ||
+        next === 'bottom-left' ||
+        next === 'top-right' ||
+        next === 'top-left'
+      ) {
+        setCorner(next);
+      }
+    };
+    const onStatus = (e: Event) => {
+      setIsTourActive(
+        Boolean((e as CustomEvent<{ active?: boolean }>).detail?.active)
+      );
+    };
+    window.addEventListener(TOUR_EVENT_NARRATE, onNarrate);
+    window.addEventListener(TOUR_EVENT_CORNER, onCorner);
+    window.addEventListener(TOUR_EVENT_STATUS, onStatus);
+    return () => {
+      window.removeEventListener(TOUR_EVENT_NARRATE, onNarrate);
+      window.removeEventListener(TOUR_EVENT_CORNER, onCorner);
+      window.removeEventListener(TOUR_EVENT_STATUS, onStatus);
+    };
+  }, []);
 
   const pushUserMessage = (text: string) => {
     applyMessages([...messagesRef.current, { role: 'user', text }]);
@@ -629,25 +714,41 @@ const AIAssistantClient: React.FC = () => {
 
   const showThinking = isLoading && replyIndexRef.current === null;
 
+  const isTop = corner === 'top-left' || corner === 'top-right';
+  const isLeft = corner === 'bottom-left' || corner === 'top-left';
+  const verticalCls = isTop ? 'top-full mt-4' : 'bottom-full mb-4';
+  const panelHCls = isLeft ? 'left-0' : 'right-0';
+  const sideHCls = isLeft ? 'left-full ml-4' : 'right-full mr-4';
+  const currentOffset = offsets[corner];
+
   return (
-    <div className="fixed bottom-8 right-8 z-1100 flex flex-col items-end">
+    <motion.div
+      className="fixed bottom-8 right-8 z-1100"
+      animate={{ x: currentOffset.x, y: currentOffset.y }}
+      transition={{ type: 'spring', stiffness: 130, damping: 20, mass: 0.9 }}
+    >
+      <div className="relative">
       {isHovered && !isOpen && notices.length === 0 && (
-        <div className="mb-4 mr-2 bg-sky-600 text-white text-[11px] font-bold uppercase tracking-wider px-4 py-2 rounded-full shadow-2xl flex items-center gap-2 pointer-events-none">
+        <div className={`absolute ${verticalCls} ${sideHCls} bg-sky-600 text-white text-[11px] font-bold uppercase tracking-wider px-4 py-2 rounded-full shadow-2xl flex items-center gap-2 pointer-events-none whitespace-nowrap`}>
           <Sparkles size={12} className="animate-pulse" />
           Chat with my persona
         </div>
       )}
 
       {!isOpen && notices.length > 0 && (
-        <div className="mb-4 mr-1 flex flex-col items-end gap-2 max-w-[280px]">
+        <div className={`absolute ${verticalCls} ${sideHCls} flex flex-col items-end gap-2 max-w-[260px]`}>
           {notices.map((notice) => (
             <div
               key={notice.id}
-              onClick={() => setIsOpen(true)}
+              onClick={() => {
+                if (!isTourActive) setIsOpen(true);
+              }}
               role="button"
               tabIndex={0}
-              onKeyDown={(e) => e.key === 'Enter' && setIsOpen(true)}
-              className="cursor-pointer group text-left bg-zinc-900/95 backdrop-blur border border-white/10 rounded-2xl rounded-br-none px-4 py-3 shadow-2xl text-sm text-zinc-300 hover:border-sky-500/50 transition-colors flex items-start gap-2"
+              onKeyDown={(e) =>
+                e.key === 'Enter' && !isTourActive && setIsOpen(true)
+              }
+              className={`cursor-pointer group text-left bg-zinc-900/95 backdrop-blur border border-white/10 rounded-2xl ${isLeft ? 'rounded-bl-none' : 'rounded-br-none'} px-4 py-3 shadow-2xl text-sm text-zinc-300 hover:border-sky-500/50 transition-colors flex items-start gap-2`}
             >
               <span className="flex-1 leading-snug line-clamp-3">{notice.text}</span>
               <button
@@ -686,7 +787,7 @@ const AIAssistantClient: React.FC = () => {
       </button>
 
       {isOpen && (
-        <div className="absolute bottom-20 right-0 w-[90vw] md:w-[400px] h-[600px] max-h-[80vh] bg-zinc-950/95 backdrop-blur-2xl rounded-3xl overflow-hidden shadow-[0_50px_100px_-20px_rgba(0,0,0,0.8)] flex flex-col border border-white/10">
+        <div className={`absolute ${verticalCls} ${panelHCls} w-[90vw] md:w-[400px] h-[600px] max-h-[80vh] bg-zinc-950/95 backdrop-blur-2xl rounded-3xl overflow-hidden shadow-[0_50px_100px_-20px_rgba(0,0,0,0.8)] flex flex-col border border-white/10`}>
           <div className="px-4 py-3 bg-black/40 border-b border-white/5 flex items-center justify-between">
             <div className="flex items-center gap-2.5">
               <div className="w-8 h-8 rounded-lg bg-sky-500/10 flex items-center justify-center border border-sky-500/20">
@@ -697,6 +798,11 @@ const AIAssistantClient: React.FC = () => {
                 <h4 className="text-xs font-black text-white uppercase tracking-wider">
                   Sunil&apos;s Persona
                 </h4>
+                {isTourActive && (
+                  <span className="ml-1 px-1.5 py-0.5 rounded-full bg-sky-500/15 border border-sky-500/30 text-[8px] font-black uppercase tracking-widest text-sky-400 animate-pulse">
+                    Tour
+                  </span>
+                )}
               </div>
             </div>
             <button
@@ -812,7 +918,8 @@ const AIAssistantClient: React.FC = () => {
                 <button
                   key={i}
                   onClick={() => handleSendMessage(suggestion)}
-                  className="whitespace-nowrap px-3 py-1.5 bg-zinc-900 hover:bg-zinc-800 border border-white/5 text-[10px] font-bold text-sky-400 uppercase tracking-wider rounded-lg transition-colors"
+                  disabled={isTourActive}
+                  className="whitespace-nowrap px-3 py-1.5 bg-zinc-900 hover:bg-zinc-800 border border-white/5 text-[10px] font-bold text-sky-400 uppercase tracking-wider rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   {suggestion}
                 </button>
@@ -825,12 +932,13 @@ const AIAssistantClient: React.FC = () => {
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
-                placeholder="Ask my persona anything..."
-                className="w-full pl-4 pr-12 py-3 bg-zinc-950 border border-white/10 rounded-2xl text-white text-sm focus:outline-none focus:border-sky-500/50 transition-colors"
+                disabled={isTourActive}
+                placeholder={isTourActive ? 'Tour in progress...' : 'Ask my persona anything...'}
+                className="w-full pl-4 pr-12 py-3 bg-zinc-950 border border-white/10 rounded-2xl text-white text-sm focus:outline-none focus:border-sky-500/50 transition-colors disabled:opacity-60"
               />
               <button
                 onClick={() => handleSendMessage()}
-                disabled={!inputValue.trim() || isLoading}
+                disabled={!inputValue.trim() || isLoading || isTourActive}
                 className="absolute right-1.5 top-1.5 w-9 h-9 bg-sky-600 text-white rounded-xl flex items-center justify-center hover:bg-sky-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
               >
                 <Send size={16} />
@@ -839,7 +947,8 @@ const AIAssistantClient: React.FC = () => {
           </div>
         </div>
       )}
-    </div>
+      </div>
+    </motion.div>
   );
 };
 

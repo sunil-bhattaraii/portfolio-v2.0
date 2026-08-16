@@ -1,6 +1,7 @@
 import React from 'react';
 import Header from '@/components/Header';
 import AIAssistant from '@/components/AIAssistant';
+import SiteTour from '@/components/SiteTour';
 import PrintShortcut from '@/components/cv/PrintShortcut';
 
 export default function PublicLayout({
@@ -13,6 +14,7 @@ export default function PublicLayout({
       <Header />
       <div className="grow">{children}</div>
       <AIAssistant />
+      <SiteTour />
       <PrintShortcut />
     </>
   );
