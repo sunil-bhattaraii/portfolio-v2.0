@@ -49,9 +49,9 @@ const HeroActions: React.FC = () => {
       <div className="w-full lg:w-auto flex justify-center lg:justify-start">
         <button
           onClick={startTour}
-          className="px-5 py-3 md:py-3.5 text-sky-400 hover:text-white font-bold flex items-center justify-center gap-2 transition-all active:scale-95 text-xs md:text-sm bg-sky-500/5 border border-sky-500/30 hover:bg-sky-500/15 hover:border-sky-400/50 rounded-lg"
+          className="text-xs text-sky-500 hover:text-sky-300 font-medium flex items-center justify-center gap-1.5 transition-colors bg-transparent border-none"
         >
-          <Compass size={18} className="text-sky-500" /> Take a Tour
+          <Compass size={14} /> Take a Tour
         </button>
       </div>
     </div>
