@@ -2,6 +2,7 @@ import React from 'react';
 import type { Metadata } from 'next';
 import './cv.css';
 import CvToolbar from '@/components/cv/CvToolbar';
+import AutoPrint from '@/components/cv/AutoPrint';
 import {
   getSiteConfig,
   getExperience,
@@ -76,6 +77,7 @@ const CvPage: React.FC = async () => {
   return (
     <main className="cv-page">
       <CvToolbar />
+      <AutoPrint />
       <article className="cv-paper">
         <header className="cv-header">
           <h1 className="cv-name">{hero.name}</h1>
