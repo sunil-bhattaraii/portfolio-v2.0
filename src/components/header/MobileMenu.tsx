@@ -1,9 +1,9 @@
 'use client';
 
 import React, { useState } from 'react';
-import Link from 'next/link';
-import { Menu, X, FileDown } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import NavLinks from './NavLinks';
+import PrintCvButton from './PrintCvButton';
 
 const MobileMenu: React.FC = () => {
   const [open, setOpen] = useState(false);
@@ -29,14 +29,7 @@ const MobileMenu: React.FC = () => {
 
             {/* Print CV — opens the printable CV page */}
             <div className="px-4">
-              <Link
-                href="/cv"
-                onClick={() => setOpen(false)}
-                className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-zinc-500 hover:text-white transition-all text-sm font-bold w-full border border-zinc-800 hover:border-zinc-700"
-              >
-                <FileDown size={14} className="shrink-0 text-sky-500" />
-                Print CV
-              </Link>
+              <PrintCvButton onNavigate={() => setOpen(false)} className="w-full" />
             </div>
           </div>
         </>
