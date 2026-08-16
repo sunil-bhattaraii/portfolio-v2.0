@@ -2,16 +2,13 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
 import { Bot, Send, X, Sparkles, Terminal, Check } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { submitContact } from '@/lib/web3forms';
 import {
-  DEFAULT_CORNER,
-  TOUR_EVENT_CORNER,
   TOUR_EVENT_NARRATE,
   TOUR_EVENT_STATUS,
-  type TourCorner,
+  TOUR_EVENT_STOP,
 } from '@/lib/site-tour';
 import type { Project } from '@/types';
 
@@ -167,15 +164,6 @@ const AIAssistantClient: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [toolActivity, setToolActivity] = useState<ToolActivity[]>([]);
   const [notices, setNotices] = useState<Notice[]>([]);
-  const [corner, setCorner] = useState<TourCorner>(DEFAULT_CORNER);
-  const [offsets, setOffsets] = useState<
-    Record<TourCorner, { x: number; y: number }>
-  >({
-    'bottom-right': { x: 0, y: 0 },
-    'bottom-left': { x: 0, y: 0 },
-    'top-right': { x: 0, y: 0 },
-    'top-left': { x: 0, y: 0 },
-  });
   const [isTourActive, setIsTourActive] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -216,29 +204,6 @@ const AIAssistantClient: React.FC = () => {
     return () => {
       persistMessages(messagesRef.current);
     };
-  }, []);
-
-  useEffect(() => {
-    const computeOffsets = () => {
-      const vw = window.innerWidth;
-      const vh = window.innerHeight;
-      const btnSize = 64;
-      const margin = 32;
-      const headerHeight =
-        document.querySelector('header')?.getBoundingClientRect().height ?? 72;
-      const topOffset = headerHeight + 20;
-      const xLeft = -(vw - btnSize - margin * 2);
-      const yTop = -(vh - btnSize - margin - topOffset);
-      setOffsets({
-        'bottom-right': { x: 0, y: 0 },
-        'bottom-left': { x: xLeft, y: 0 },
-        'top-right': { x: 0, y: yTop },
-        'top-left': { x: xLeft, y: yTop },
-      });
-    };
-    computeOffsets();
-    window.addEventListener('resize', computeOffsets);
-    return () => window.removeEventListener('resize', computeOffsets);
   }, []);
 
   const pushNotice = (text: string) => {
@@ -319,28 +284,15 @@ const AIAssistantClient: React.FC = () => {
         showTourBubble(detail.text, detail.duration ?? 6000);
       }
     };
-    const onCorner = (e: Event) => {
-      const next = (e as CustomEvent<{ corner?: TourCorner }>).detail?.corner;
-      if (
-        next === 'bottom-right' ||
-        next === 'bottom-left' ||
-        next === 'top-right' ||
-        next === 'top-left'
-      ) {
-        setCorner(next);
-      }
-    };
     const onStatus = (e: Event) => {
       setIsTourActive(
         Boolean((e as CustomEvent<{ active?: boolean }>).detail?.active)
       );
     };
     window.addEventListener(TOUR_EVENT_NARRATE, onNarrate);
-    window.addEventListener(TOUR_EVENT_CORNER, onCorner);
     window.addEventListener(TOUR_EVENT_STATUS, onStatus);
     return () => {
       window.removeEventListener(TOUR_EVENT_NARRATE, onNarrate);
-      window.removeEventListener(TOUR_EVENT_CORNER, onCorner);
       window.removeEventListener(TOUR_EVENT_STATUS, onStatus);
     };
   }, []);
@@ -714,29 +666,21 @@ const AIAssistantClient: React.FC = () => {
 
   const showThinking = isLoading && replyIndexRef.current === null;
 
-  const isTop = corner === 'top-left' || corner === 'top-right';
-  const isLeft = corner === 'bottom-left' || corner === 'top-left';
-  const verticalCls = isTop ? 'top-full mt-4' : 'bottom-full mb-4';
-  const panelHCls = isLeft ? 'left-0' : 'right-0';
-  const sideHCls = isLeft ? 'left-full ml-4' : 'right-full mr-4';
-  const currentOffset = offsets[corner];
+  const verticalCls = 'bottom-full mb-4';
+  const panelHCls = 'right-0';
 
   return (
-    <motion.div
-      className="fixed bottom-8 right-8 z-1100"
-      animate={{ x: currentOffset.x, y: currentOffset.y }}
-      transition={{ type: 'spring', stiffness: 130, damping: 20, mass: 0.9 }}
-    >
+    <div className="fixed bottom-8 right-8 z-1100">
       <div className="relative">
       {isHovered && !isOpen && notices.length === 0 && (
-        <div className={`absolute ${verticalCls} ${sideHCls} bg-sky-600 text-white text-[11px] font-bold uppercase tracking-wider px-4 py-2 rounded-full shadow-2xl flex items-center gap-2 pointer-events-none whitespace-nowrap`}>
+        <div className={`absolute ${verticalCls} ${panelHCls} bg-sky-600 text-white text-[11px] font-bold uppercase tracking-wider px-4 py-2 rounded-full shadow-2xl flex items-center gap-2 pointer-events-none whitespace-nowrap`}>
           <Sparkles size={12} className="animate-pulse" />
           Chat with my persona
         </div>
       )}
 
       {!isOpen && notices.length > 0 && (
-        <div className={`absolute ${verticalCls} ${sideHCls} flex flex-col items-end gap-2 max-w-[260px]`}>
+        <div className={`absolute ${verticalCls} ${panelHCls} w-72 max-w-[80vw] flex flex-col items-end gap-2`}>
           {notices.map((notice) => (
             <div
               key={notice.id}
@@ -748,7 +692,7 @@ const AIAssistantClient: React.FC = () => {
               onKeyDown={(e) =>
                 e.key === 'Enter' && !isTourActive && setIsOpen(true)
               }
-              className={`cursor-pointer group text-left bg-zinc-900/95 backdrop-blur border border-white/10 rounded-2xl ${isLeft ? 'rounded-bl-none' : 'rounded-br-none'} px-4 py-3 shadow-2xl text-sm text-zinc-300 hover:border-sky-500/50 transition-colors flex items-start gap-2`}
+              className="cursor-pointer group text-left bg-zinc-900/95 backdrop-blur border border-white/10 rounded-2xl rounded-br-none px-4 py-3 shadow-2xl text-sm text-zinc-300 hover:border-sky-500/50 transition-colors flex items-start gap-2"
             >
               <span className="flex-1 leading-snug line-clamp-3">{notice.text}</span>
               <button
@@ -769,7 +713,14 @@ const AIAssistantClient: React.FC = () => {
       <button
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => {
+          if (isTourActive) {
+            window.dispatchEvent(new CustomEvent(TOUR_EVENT_STOP));
+            if (isOpen) setIsOpen(false);
+            return;
+          }
+          setIsOpen(!isOpen);
+        }}
         className={`w-16 h-16 rounded-full flex items-center justify-center shadow-2xl transition-all duration-500 border-2 ${
           isOpen
             ? 'bg-zinc-900 border-white/20 rotate-90 text-zinc-400'
@@ -948,7 +899,7 @@ const AIAssistantClient: React.FC = () => {
         </div>
       )}
       </div>
-    </motion.div>
+    </div>
   );
 };
 
