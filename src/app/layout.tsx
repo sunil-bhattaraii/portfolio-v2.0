@@ -140,7 +140,7 @@ export default function RootLayout({
       </head>
       <body>
         <div className="relative min-h-screen text-[#f4f4f5]">
-          <div className="fixed inset-0 z-0">
+          <div className="fixed inset-0 z-0 print:hidden">
             <InteractiveBackground />
           </div>
 
